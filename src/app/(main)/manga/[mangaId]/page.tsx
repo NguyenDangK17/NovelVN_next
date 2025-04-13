@@ -59,13 +59,15 @@ const MangaDetailPage = () => {
   const router = useRouter();
   const params = useParams();
   const mangaId = params.mangaId as string;
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const [manga, setManga] = useState<MangaData | null>(null);
   const [coverArt, setCoverArt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [userRating, setUserRating] = useState(0);
 
-  const { chapterListData } = useChapterList(mangaId);
+  const { chapterListData } = useChapterList(mangaId, selectedLanguage);
 
   useEffect(() => {
     if (!mangaId) return;
@@ -314,32 +316,42 @@ const MangaDetailPage = () => {
               <div className="p-4 border-b border-gray-700 flex flex-col sm:flex-row justify-between gap-2">
                 <h2 className="font-bold mb-2 text-lg text-primary-500">Chapters</h2>
                 <div className="flex gap-2">
-                  <select className="bg-[#1a1a1a] text-white px-2 py-1 rounded text-sm">
-                    <option value="asc">Ascending</option>
-                    <option value="desc">Descending</option>
-                  </select>
-                  <select className="bg-[#1a1a1a] text-white px-2 py-1 rounded text-sm">
-                    <option value="all">All Languages</option>
+                  <button
+                    onClick={() => setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
+                    className="w-24 bg-primary-500 hover:bg-primary-700 text-white font-medium px-2 py-1 rounded text-sm flex items-center gap-1 justify-center"
+                  >
+                    {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                  </button>
+                  <select
+                    className="bg-[#1a1a1a] text-white px-2 py-1 rounded text-sm"
+                    value={selectedLanguage}
+                    onChange={e => setSelectedLanguage(e.target.value)}
+                  >
                     <option value="en">English</option>
-                    <option value="jp">Japanese</option>
+                    <option value="vi">Vietnamese</option>
                   </select>
                 </div>
               </div>
               <div className="divide-y divide-gray-700">
                 {chapterListData
-                  .sort((a, b) => a.chapterNumber - b.chapterNumber)
+                  .sort((a, b) => {
+                    // Convert chapter numbers to floats for proper decimal sorting
+                    const numA = parseFloat(a.chapter);
+                    const numB = parseFloat(b.chapter);
+                    return sortOrder === 'asc' ? numA - numB : numB - numA;
+                  })
                   .map(chapter => (
                     <div
                       key={chapter.id}
                       className="p-4 hover:bg-[#333333] cursor-pointer flex justify-between items-center"
-                      onClick={() => router.push(`/chapter/${chapter.id}`)}
+                      onClick={() => router.push(`/chapter/${chapter.id}?lang=${selectedLanguage}`)}
                     >
                       <div className="flex items-center gap-3 text-sm">
                         <FaBookOpen className="text-gray-400" />
                         <span>Chapter {chapter.chapter}</span>
                       </div>
                       <div className="text-xs text-gray-400 flex gap-2">
-                        <span>English</span>
+                        <span>{selectedLanguage === 'en' ? 'English' : 'Vietnamese'}</span>
                         <span>2 days ago</span>
                       </div>
                     </div>
