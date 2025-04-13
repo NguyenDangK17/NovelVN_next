@@ -208,15 +208,28 @@ const NovelCard: React.FC<{ comic: Novel }> = memo(({ comic }) => {
 
 NovelCard.displayName = "NovelCard";
 
-const Novels: React.FC<{ comics: Novel[] }> = memo(({ comics }) => (
-  <div className="h-full">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {comics.slice(0, 6).map((comic) => (
-        <NovelCard key={comic._id} comic={comic} />
-      ))}
+const Novels: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
+  console.log("Novels component received comics:", comics);
+
+  // Ensure comics is an array
+  const comicsArray = Array.isArray(comics) ? comics : [];
+
+  return (
+    <div className="h-full">
+      {comicsArray.length === 0 ? (
+        <div className="text-center text-gray-400 py-8">
+          <p>No novels found.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {comicsArray.slice(0, 6).map((comic) => (
+            <NovelCard key={comic._id} comic={comic} />
+          ))}
+        </div>
+      )}
     </div>
-  </div>
-));
+  );
+});
 
 Novels.displayName = "Novels";
 
@@ -292,10 +305,27 @@ const ProfilePage: React.FC = () => {
     const fetchComics = async () => {
       try {
         const res = await axios.get(API_ENDPOINTS.NOVELS);
-        setComics(res.data);
+        console.log("API Response:", res.data);
+
+        // Ensure comics is always an array
+        if (Array.isArray(res.data)) {
+          setComics(res.data);
+        } else if (res.data && typeof res.data === "object") {
+          // If the API returns an object with a data property that contains the array
+          if (Array.isArray(res.data.data)) {
+            setComics(res.data.data);
+          } else {
+            console.error("API response is not in expected format:", res.data);
+            setComics([]);
+          }
+        } else {
+          console.error("API response is not an array or object:", res.data);
+          setComics([]);
+        }
       } catch (error) {
         console.error("Failed to load comics", error);
         setError("Failed to load comics. Please try again later.");
+        setComics([]);
       }
     };
 

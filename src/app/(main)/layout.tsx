@@ -20,7 +20,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       />
       <Navbar />
       <main className="min-h-screen">{children}</main>
-      <Footer />
+      {/* <Footer /> */}
     </LayoutWrapper>
   );
 }

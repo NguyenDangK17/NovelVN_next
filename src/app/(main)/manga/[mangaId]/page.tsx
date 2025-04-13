@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
-  FaHeart,
   FaStar,
   FaBookOpen,
-  FaChevronDown,
-  FaChevronUp,
-  FaComment,
   FaDownload,
   FaShare,
+  FaGlobe,
+  FaCalendarAlt,
+  FaUser,
+  FaPen,
+  FaInfoCircle,
+  FaBookmark,
 } from "react-icons/fa";
 import axios from "axios";
 import Image from "next/image";
@@ -55,34 +57,6 @@ interface MangaData {
   }>;
 }
 
-// Define the cover art data type
-interface CoverArtData {
-  id: string;
-  type: string;
-  attributes: {
-    fileName: string;
-  };
-}
-
-// Define the chapter data type
-interface ChapterData {
-  chapterNumber: number;
-  chapter: string;
-  id: string;
-  volume?: string;
-  others: any[];
-  count: number;
-}
-
-const genres = [
-  "Action",
-  "Comedy",
-  "Fantasy",
-  "Harem",
-  "School Life",
-  "Shounen",
-];
-
 const MangaDetailPage = () => {
   const router = useRouter();
   const params = useParams();
@@ -90,8 +64,8 @@ const MangaDetailPage = () => {
 
   const [manga, setManga] = useState<MangaData | null>(null);
   const [coverArt, setCoverArt] = useState<string | null>(null);
-  const [openVolumes, setOpenVolumes] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [userRating, setUserRating] = useState(0);
 
   const { chapterListData } = useChapterList(mangaId);
 
@@ -134,11 +108,8 @@ const MangaDetailPage = () => {
 
   if (loading || !manga) return <Loading />;
 
-  const toggleVolume = (volumeKey: string) => {
-    setOpenVolumes((prev) => ({
-      ...prev,
-      [volumeKey]: !prev[volumeKey],
-    }));
+  const handleRating = (rating: number) => {
+    setUserRating(rating);
   };
 
   // Get genres from tags
@@ -161,278 +132,290 @@ const MangaDetailPage = () => {
     });
   };
 
+  // Find author and artist from relationships
+  const findRelationship = (type: string) => {
+    const relationship = manga.relationships.find((rel) => rel.type === type);
+    return relationship ? relationship.id : "Unknown";
+  };
+
+  const authorId = findRelationship("author");
+  const artistId = findRelationship("artist");
+
+  const InfoRow = ({
+    icon,
+    label,
+    value,
+  }: {
+    icon: any;
+    label: string;
+    value: any;
+  }) => (
+    <div className="flex items-center gap-2 text-sm">
+      {icon}
+      <span className="font-medium w-20">{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+
+  const StatsRow = ({ label, value }: { label: string; value: any }) => (
+    <div className="flex justify-between text-sm">
+      <span className="text-gray-400">{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+
+  const RatingSection = ({
+    userRating,
+    handleRating,
+  }: {
+    userRating: number;
+    handleRating: (rating: number) => void;
+  }) => (
+    <div className="bg-[#2c2c2c] rounded-lg p-4">
+      <h3 className="font-bold mb-3 text-base">Rating</h3>
+      <div className="flex items-center gap-2 mb-3">
+        <div className="text-2xl font-bold">4.5</div>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              className={`${
+                star <= 4 ? "text-yellow-400" : "text-gray-600"
+              } text-base cursor-pointer`}
+              onClick={() => handleRating(star)}
+            />
+          ))}
+        </div>
+        <span className="text-sm text-gray-400">(1,234 ratings)</span>
+      </div>
+      <button className="w-full py-2 bg-[#1a1a1a] hover:bg-[#333333] rounded text-sm">
+        Rate this manga
+      </button>
+    </div>
+  );
+
   return (
-    <div className="relative p-6 w-full mx-auto text-white mb-7">
-      {/* Background Overlay */}
-      <div
-        className="absolute inset-0 w-full h-[300px] md:h-[400px] bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(25, 26, 28, 0.6) 10%, rgb(25, 26, 28) 90%), url(${coverArt})`,
-          backgroundPosition: "center 25%",
-        }}
-      />
-
-      <div className="relative w-full max-w-screen-2xl mx-auto px-6 mt-60 flex flex-col lg:flex-row gap-8">
-        <div className="w-full lg:w-9/12 flex flex-col gap-10">
-          <div className="p-6 rounded-lg bg-[#2c2c2c]">
-            <div className="relative flex flex-col md:flex-row gap-6">
-              <div className="w-full md:w-3/12 flex justify-center">
-                <div className="relative w-[200px] md:w-[250px] lg:w-[283px] max-w-full">
-                  <Image
-                    src={coverArt || ""}
-                    alt={manga.attributes.title.en}
-                    width={283}
-                    height={400}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              </div>
-
-              <div className="w-full md:w-9/12 flex flex-col justify-between space-y-2">
-                <h1 className="text-2xl md:text-4xl font-bold mb-2">
-                  {manga.attributes.title.en}
+    <div className="min-h-screen bg-[#1a1a1a] text-white">
+      {/* Hero Section */}
+      <div className="relative w-full overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-sm"
+          style={{
+            backgroundImage: `url(${coverArt})`,
+            backgroundPosition: "center 30%",
+          }}
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-60" />
+        <div className="relative z-10 px-4 py-6 sm:px-6 md:px-8 lg:px-12 flex items-center justify-start mt-12">
+          <div className="flex flex-row items-stretch gap-4 w-full flex-wrap">
+            <div className="relative w-[30%] max-w-[200px] min-w-[100px] aspect-[1443/2048] flex-shrink-0">
+              <Image
+                src={coverArt || ""}
+                alt={manga.attributes.title.en || "Manga cover"}
+                fill
+                className="object-cover rounded-md"
+              />
+            </div>
+            <div className="flex flex-col flex-1 min-h-[100%]">
+              <div className="flex flex-col h-full justify-between">
+                {/* Title at top */}
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold break-words">
+                  {manga.attributes.title.en ||
+                    manga.attributes.altTitles[0].en ||
+                    "Manga title"}
                 </h1>
 
-                <div className="flex flex-wrap gap-2 text-white font-semibold text-sm">
-                  {genres.map((genre) => (
-                    <span
-                      key={genre}
-                      className="inline-block px-3 py-1 bg-[#1f1f1f] rounded-full"
-                    >
-                      {genre}
-                    </span>
-                  ))}
-                </div>
-
-                <p>
-                  <span className="font-semibold mr-2">Year:</span>
-                  {manga.attributes.year}
-                </p>
-                <p className="mb-6">
-                  <span className="font-semibold mr-2">Status:</span>
-                  {manga.attributes.status.charAt(0).toUpperCase() +
-                    manga.attributes.status.slice(1)}
-                </p>
-
-                <div className="flex flex-row gap-4">
-                  <button className="flex w-full md:w-[240px] items-center justify-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-md">
-                    <FaHeart /> Add to Favorite
+                {/* Action buttons pinned to bottom */}
+                <div className="flex gap-3">
+                  <button className="flex items-center gap-2 px-12 py-2 text-lg font-medium bg-primary-500 hover:bg-primary-700 rounded">
+                    <FaBookOpen />
+                    <span>Read Now</span>
                   </button>
-                  <button className="flex w-full md:w-[240px] items-center justify-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 rounded-md">
-                    <FaBookOpen /> Start Reading
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-3 md:grid-cols-5 gap-12 w-full p-6">
-                  <button className="flex flex-col items-center">
-                    <FaHeart size={24} className="text-red-500" />
-                    <span className="text-sm mt-1">708</span>
-                  </button>
-                  <button className="flex flex-col items-center">
-                    <FaStar size={24} className="text-yellow-400" />
-                    <span className="text-sm mt-1">Rate</span>
-                  </button>
-                  <button className="flex flex-col items-center">
-                    <FaComment size={24} />
-                    <span className="text-sm mt-1">Forums</span>
-                  </button>
-                  <button className="flex flex-col items-center">
-                    <FaDownload size={24} className="text-blue-400" />
-                    <span className="text-sm mt-1">Download</span>
-                  </button>
-                  <button className="flex flex-col items-center">
-                    <FaShare size={24} className="text-green-400" />
-                    <span className="text-sm mt-1">Share</span>
+                  <button className="flex items-center gap-2 px-12 py-2 text-lg font-medium bg-[#2c2c2c] hover:bg-[#333333] rounded">
+                    <FaBookmark />
+                    <span>Bookmark</span>
                   </button>
                 </div>
               </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center py-5 font-bold">
-              <div>
-                <p className="text-md text-gray-500">Updated On</p>
-                <p className="text-2xl text-white">
-                  {formatDate(manga.attributes.updatedAt)}
-                </p>
-              </div>
-              <div>
-                <p className="text-md text-gray-500">Total Chapters</p>
-                <p className="text-2xl text-white">{chapterListData.length}</p>
-              </div>
-              <div>
-                <p className="text-md text-gray-500">Rating</p>
-                <p className="text-2xl text-orange-400">10,000</p>
-              </div>
-              <div>
-                <p className="text-md text-gray-500">Available Languages</p>
-                <p className="text-2xl text-white">
-                  {manga.attributes.availableTranslatedLanguages.length}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-10">
-              <h2 className="text-xl font-bold mb-2">Alternative Titles</h2>
-              {manga.attributes.altTitles.length > 0 ? (
-                <ul className="space-y-1">
-                  {manga.attributes.altTitles.map((altTitle, index) => {
-                    const language = Object.keys(altTitle)[0];
-                    return (
-                      <li key={index} className="text-sm">
-                        <span className="font-semibold mr-2">
-                          {language.toUpperCase()}:
-                        </span>
-                        {altTitle[language]}
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                <p className="text-sm">No alternative names available.</p>
-              )}
-            </div>
-
-            <div className="mt-10">
-              <h2 className="text-xl font-bold mb-2">Themes</h2>
-              <div className="flex flex-wrap gap-2 text-white font-semibold text-sm">
-                {themes.map((theme) => (
-                  <span
-                    key={theme}
-                    className="inline-block px-3 py-1 bg-[#1f1f1f] rounded-full"
-                  >
-                    {theme}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-10">
-              <h2 className="text-xl font-bold mb-2">Description</h2>
-              <p>{manga.attributes.description.en}</p>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Chapter List */}
-          <div className="space-y-4">
-            {/* Group chapters by volume for display */}
-            {(
-              Object.entries(
-                chapterListData.reduce((acc, chapter) => {
-                  const volume = chapter.volume || "none";
-                  if (!acc[volume]) {
-                    acc[volume] = [];
-                  }
-                  acc[volume].push(chapter);
-                  return acc;
-                }, {} as Record<string, ChapterData[]>)
-              ) as [string, ChapterData[]][]
-            ).map(([volumeKey, volumeChapters]) => (
-              <div key={volumeKey} className="rounded-lg bg-[#2c2c2c]">
-                <button
-                  className="flex items-center justify-between w-full bg-[#2c2c2c] rounded-md px-6 py-4"
-                  onClick={() => toggleVolume(volumeKey)}
-                >
-                  <span className="font-bold text-white text-2xl">
-                    Chapter List
-                  </span>
-                  {openVolumes[volumeKey] ? <FaChevronUp /> : <FaChevronDown />}
-                </button>
-
-                {!openVolumes[volumeKey] && (
-                  <div className="p-4 bg-[#1e1e1e] flex flex-col md:flex-row">
-                    <Image
-                      src={coverArt || ""}
-                      alt="Cover"
-                      width={150}
-                      height={200}
-                      className="w-[141px] h-[201px] mx-auto md:mx-0 md:mr-6 object-cover"
+      {/* Main Content */}
+      <div className="px-4 py-6 sm:px-6 md:px-8 lg:px-12">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Column */}
+          <div className="w-full lg:w-3/4 flex flex-col gap-6">
+            {/* Manga Info */}
+            <div className="bg-[#2c2c2c] rounded-lg overflow-hidden">
+              <div className="p-4 border-b border-gray-700">
+                <h2 className="font-bold mb-2 text-2xl text-primary-500">
+                  Manga Information
+                </h2>
+              </div>
+              <div className="p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <InfoRow
+                      icon={<FaUser />}
+                      label="Author:"
+                      value={authorId}
                     />
+                    <InfoRow
+                      icon={<FaPen />}
+                      label="Artist:"
+                      value={artistId}
+                    />
+                    <InfoRow
+                      icon={<FaCalendarAlt />}
+                      label="Release:"
+                      value={manga.attributes.year}
+                    />
+                    <InfoRow
+                      icon={<FaInfoCircle />}
+                      label="Status:"
+                      value={manga.attributes.status}
+                    />
+                    <InfoRow
+                      icon={<FaGlobe />}
+                      label="Languages:"
+                      value={manga.attributes.availableTranslatedLanguages.join(
+                        ", "
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-4">
                     <div className="flex-1">
-                      <ul className="overflow-y-auto max-h-64">
-                        {volumeChapters
-                          .sort(
-                            (a: ChapterData, b: ChapterData) =>
-                              a.chapterNumber - b.chapterNumber
-                          )
-                          .map((chapter: ChapterData) => (
-                            <li
-                              key={chapter.id}
-                              className="py-2 border-b border-gray-700 hover:bg-[#292929] cursor-pointer px-3"
-                              onClick={() =>
-                                router.push(`/chapter/${chapter.id}`)
-                              }
-                            >
-                              Chapter {chapter.chapter}
-                            </li>
-                          ))}
-                      </ul>
+                      <h3 className="font-medium text-md mb-1">Genres</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {genres.map((genre) => (
+                          <span
+                            key={genre}
+                            className="px-2 py-1 bg-[#1a1a1a] rounded text-xs"
+                          >
+                            {genre}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-md mb-1">Themes</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {themes.map((theme) => (
+                          <span
+                            key={theme}
+                            className="px-2 py-1 bg-[#1a1a1a] rounded text-xs"
+                          >
+                            {theme}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
+
+                <div>
+                  <h2 className="font-bold mb-2 text-lg text-primary-500">
+                    Description
+                  </h2>
+                  <p className="text-gray-300 text-sm">
+                    {manga.attributes.description.en}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold mb-2 text-lg text-primary-500">
+                    Alternative Titles
+                  </h3>
+                  <div className="space-y-1">
+                    {manga.attributes.altTitles.map((altTitle, index) => {
+                      const language = Object.keys(altTitle)[0];
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <span className="text-gray-400 w-16">
+                            {language}:
+                          </span>
+                          <span>{altTitle[language]}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Related/Sidebar (same as yours) */}
-        {/* Right Column */}
-        <div className="w-full lg:w-3/12 hidden lg:block">
-          <div className="bg-[#2c2c2c] p-4 rounded-lg">
-            <h2 className="text-lg font-bold mb-4">Related Novels</h2>
-            <ul className="space-y-3">
-              <li className="text-sm hover:underline cursor-pointer">
-                Related Novel 1
-              </li>
-              <li className="text-sm hover:underline cursor-pointer">
-                Related Novel 2
-              </li>
-              <li className="text-sm hover:underline cursor-pointer">
-                Related Novel 3
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-gray-800 p-4 rounded-lg text-center">
-            <p className="text-gray-400 text-sm">[Ad Placeholder]</p>
-          </div>
-
-          <div className="bg-[#2c2c2c] p-4 rounded-lg">
-            <h2 className="text-lg font-bold mb-4">Quick Stats</h2>
-            <p className="text-md text-gray-500">Updated On</p>
-            <p className="text-xl font-bold text-white">
-              {formatDate(manga.attributes.updatedAt)}
-            </p>
-          </div>
-        </div>
-
-        {/* Show Right Column Content Below on Tablets */}
-        <div className="block lg:hidden w-full">
-          <div className="bg-[#2c2c2c] p-4 rounded-lg">
-            <h2 className="text-lg font-bold mb-4">Related Novels</h2>
-            <ul className="space-y-3">
-              <li className="text-sm hover:underline cursor-pointer">
-                Related Novel 1
-              </li>
-              <li className="text-sm hover:underline cursor-pointer">
-                Related Novel 2
-              </li>
-              <li className="text-sm hover:underline cursor-pointer">
-                Related Novel 3
-              </li>
-            </ul>
+            {/* Chapters */}
+            <div className="bg-[#2c2c2c] rounded-lg overflow-hidden">
+              <div className="p-4 border-b border-gray-700 flex flex-col sm:flex-row justify-between gap-2">
+                <h2 className="font-bold mb-2 text-lg text-primary-500">
+                  Chapters
+                </h2>
+                <div className="flex gap-2">
+                  <select className="bg-[#1a1a1a] text-white px-2 py-1 rounded text-sm">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </select>
+                  <select className="bg-[#1a1a1a] text-white px-2 py-1 rounded text-sm">
+                    <option value="all">All Languages</option>
+                    <option value="en">English</option>
+                    <option value="jp">Japanese</option>
+                  </select>
+                </div>
+              </div>
+              <div className="divide-y divide-gray-700">
+                {chapterListData
+                  .sort((a, b) => a.chapterNumber - b.chapterNumber)
+                  .map((chapter) => (
+                    <div
+                      key={chapter.id}
+                      className="p-4 hover:bg-[#333333] cursor-pointer flex justify-between items-center"
+                      onClick={() => router.push(`/chapter/${chapter.id}`)}
+                    >
+                      <div className="flex items-center gap-3 text-sm">
+                        <FaBookOpen className="text-gray-400" />
+                        <span>Chapter {chapter.chapter}</span>
+                      </div>
+                      <div className="text-xs text-gray-400 flex gap-2">
+                        <span>English</span>
+                        <span>2 days ago</span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
 
-          <div className="bg-gray-800 p-4 rounded-lg text-center">
-            <p className="text-gray-400 text-sm">[Ad Placeholder]</p>
-          </div>
+          {/* Right Sidebar */}
+          <div className="w-full lg:w-1/4 flex flex-col gap-6">
+            {/* Stats */}
+            <div className="bg-[#2c2c2c] rounded-lg p-4">
+              <h3 className="font-bold mb-3 text-base">Stats</h3>
+              <StatsRow label="Views" value="1,234,567" />
+              <StatsRow label="Bookmarks" value="12,345" />
+              <StatsRow label="Chapters" value={chapterListData.length} />
+              <StatsRow
+                label="Last Updated"
+                value={formatDate(manga.attributes.updatedAt)}
+              />
+            </div>
 
-          <div className="bg-[#2c2c2c] p-4 rounded-lg">
-            <h2 className="text-lg font-bold mb-4">Quick Stats</h2>
-            <p className="text-md text-gray-500">Updated On</p>
-            <p className="text-xl font-bold text-white">
-              {formatDate(manga.attributes.updatedAt)}
-            </p>
+            {/* Rating */}
+            <RatingSection
+              userRating={userRating}
+              handleRating={handleRating}
+            />
+
+            {/* Related Manga */}
+            <div className="bg-[#2c2c2c] rounded-lg p-4">
+              <h2 className="font-bold mb-2 text-lg text-primary-500">
+                Related Manga
+              </h2>
+              <p className="text-sm text-gray-400">No related manga found.</p>
+            </div>
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ const ProfileHeader: React.FC = memo(() => {
   const handleAvatarChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!event.target.files?.[0]) return;
-      
+
       setIsUploading(true);
       const file = event.target.files[0];
       const formData = new FormData();
@@ -92,4 +92,4 @@ const ProfileHeader: React.FC = memo(() => {
 
 ProfileHeader.displayName = "ProfileHeader";
 
-export default ProfileHeader; 
+export default ProfileHeader;

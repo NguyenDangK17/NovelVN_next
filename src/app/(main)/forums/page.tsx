@@ -75,7 +75,7 @@ const recentTopics = [
 const ForumPage = () => {
   return (
     <div className="min-h-screen bg-[#191a1c] text-white pt-20 pb-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 lg:px-12">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Forums</h1>

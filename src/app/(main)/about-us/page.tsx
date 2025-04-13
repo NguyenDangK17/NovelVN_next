@@ -49,7 +49,7 @@ const teamMembers = [
 const AboutUsPage = () => {
   return (
     <div className="min-h-screen bg-[#191a1c] text-white pt-20 pb-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 lg:px-12">
         {/* Hero Section */}
         <div className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden mb-12">
           <div

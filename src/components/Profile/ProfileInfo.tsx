@@ -11,4 +11,4 @@ const ProfileInfo: React.FC = memo(() => (
 
 ProfileInfo.displayName = "ProfileInfo";
 
-export default ProfileInfo; 
+export default ProfileInfo;

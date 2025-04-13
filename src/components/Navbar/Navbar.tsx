@@ -18,7 +18,6 @@ const Navbar: React.FC = () => {
     router.push("/");
   };
 
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -69,7 +68,6 @@ const Navbar: React.FC = () => {
               className="lg:hidden text-white focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg text-sm p-2.5"
               onClick={() => {
                 setMenuOpen(!isMenuOpen);
-                setDropdownOpen(false);
               }}
             >
               <svg
@@ -245,7 +243,7 @@ const Navbar: React.FC = () => {
           >
             <ul className="flex flex-col font-semibold text-md p-4 lg:p-0 mt-4 bg-[#1f1f1f] xl:space-x-8 lg:space-x-4 lg:flex-row lg:mt-0 lg:border-0 lg:bg-transparent gap-4">
               {navLink("/", "Home")}
-              {navLink("/browse", "Browse")}
+              {navLink("/search", "Browse")}
               {navLink("/forums", "Forums")}
               {navLink("/ranking", "Ranking")}
               {navLink("/about-us", "About Us")}

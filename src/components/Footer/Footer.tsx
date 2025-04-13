@@ -8,7 +8,7 @@ const Footer = () => {
           <img
             className="lg:h-30 h-28"
             src="https://mangadex.org/img/brand/mangadex-logo.svg"
-            alt=""
+            alt="MangaVN Logo"
           />
           <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-2 items-center text-lg">

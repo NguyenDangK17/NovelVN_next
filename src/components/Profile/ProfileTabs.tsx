@@ -62,4 +62,4 @@ const ProfileTabs: React.FC<ProfileTabsProps> = memo(({ comics }) => {
 
 ProfileTabs.displayName = "ProfileTabs";
 
-export default ProfileTabs; 
+export default ProfileTabs;

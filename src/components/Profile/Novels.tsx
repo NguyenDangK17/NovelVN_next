@@ -18,4 +18,4 @@ const Novels: React.FC<NovelsProps> = memo(({ comics }) => (
 
 Novels.displayName = "Novels";
 
-export default Novels; 
+export default Novels;

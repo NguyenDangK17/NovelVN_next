@@ -11,4 +11,4 @@ const Groups: React.FC = memo(() => (
 
 Groups.displayName = "Groups";
 
-export default Groups; 
+export default Groups;

@@ -47,4 +47,4 @@ const NovelCard: React.FC<NovelCardProps> = memo(({ comic }) => {
 
 NovelCard.displayName = "NovelCard";
 
-export default NovelCard; 
+export default NovelCard;
