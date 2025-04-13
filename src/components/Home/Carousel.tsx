@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import "swiper/css";
-import Image from "next/image";
-import Link from "next/link";
-import { MangaDexManga, MangaDexResponse } from "@/types/mangaDex";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import Image from 'next/image';
+import Link from 'next/link';
+import { MangaDexManga, MangaDexResponse } from '@/types/mangaDex';
+import axios from 'axios';
 
 const CarouselComponent: React.FC = () => {
   const [mangas, setMangas] = useState<MangaDexManga[]>([]);
@@ -17,21 +17,18 @@ const CarouselComponent: React.FC = () => {
       try {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 30);
-        const formattedDate =
-          sevenDaysAgo.toISOString().split("T")[0] + "T00:00:00";
+        const formattedDate = sevenDaysAgo.toISOString().split('T')[0] + 'T00:00:00';
 
         const response = await axios.get<MangaDexResponse>(
-          `https://api.mangadex.org/manga?limit=10&includedTagsMode=AND&excludedTagsMode=OR&availableTranslatedLanguage%5B%5D=vi&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&createdAtSince=${formattedDate}&order%5BfollowedCount%5D=desc&hasAvailableChapters=true`
+          `https://api.mangadex.org/manga?limit=10&includedTagsMode=AND&excludedTagsMode=OR&availableTranslatedLanguage%5B%5D=en&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&createdAtSince=${formattedDate}&order%5BfollowedCount%5D=desc&hasAvailableChapters=true`
         );
         setMangas(response.data.data);
 
         // Fetch cover images for each manga
-        const coverPromises = response.data.data.map((manga) =>
-          fetchCoverImage(manga)
-        );
+        const coverPromises = response.data.data.map(manga => fetchCoverImage(manga));
         await Promise.all(coverPromises);
       } catch (error) {
-        console.error("Error fetching manga data:", error);
+        console.error('Error fetching manga data:', error);
       } finally {
         setLoading(false);
       }
@@ -43,9 +40,7 @@ const CarouselComponent: React.FC = () => {
   // Function to fetch cover image details for a manga
   const fetchCoverImage = async (manga: MangaDexManga) => {
     try {
-      const coverArtRelationship = manga.relationships.find(
-        (rel) => rel.type === "cover_art"
-      );
+      const coverArtRelationship = manga.relationships.find(rel => rel.type === 'cover_art');
 
       if (coverArtRelationship) {
         const coverResponse = await axios.get(
@@ -56,7 +51,7 @@ const CarouselComponent: React.FC = () => {
           const coverData = coverResponse.data.data;
           const coverUrl = `https://uploads.mangadex.org/covers/${manga.id}/${coverData.attributes.fileName}`;
 
-          setCoverImages((prev) => ({
+          setCoverImages(prev => ({
             ...prev,
             [manga.id]: coverUrl,
           }));
@@ -75,18 +70,15 @@ const CarouselComponent: React.FC = () => {
     }
 
     // Fallback image if no cover art is found
-    return "https://mangadex.org/covers/3b62f955-732c-43b2-84e7-cc1ff57896a7/7bd9d778-ad3a-4e6c-ac9a-c8f025fb07b4.png.512.jpg";
+    return 'https://mangadex.org/covers/3b62f955-732c-43b2-84e7-cc1ff57896a7/7bd9d778-ad3a-4e6c-ac9a-c8f025fb07b4.png.512.jpg';
   };
 
   // Function to get tags for a manga
   const getTags = (manga: MangaDexManga) => {
     return manga.attributes.tags
-      .filter(
-        (tag) =>
-          tag.attributes.group === "genre" || tag.attributes.group === "theme"
-      )
+      .filter(tag => tag.attributes.group === 'genre' || tag.attributes.group === 'theme')
       .slice(0, 5) // Limit to 5 tags
-      .map((tag) => tag.attributes.name.en);
+      .map(tag => tag.attributes.name.en);
   };
 
   // Function to get description for a manga
@@ -95,12 +87,10 @@ const CarouselComponent: React.FC = () => {
     const description =
       manga.attributes.description.en ||
       Object.values(manga.attributes.description)[0] ||
-      "No description available.";
+      'No description available.';
 
     // Truncate description if it's too long
-    return description.length > 300
-      ? description.substring(0, 300) + "..."
-      : description;
+    return description.length > 300 ? description.substring(0, 300) + '...' : description;
   };
 
   // Function to get title for a manga
@@ -110,7 +100,7 @@ const CarouselComponent: React.FC = () => {
       manga.attributes.title.vi ||
       manga.attributes.title.en ||
       Object.values(manga.attributes.title)[0] ||
-      "Untitled"
+      'Untitled'
     );
   };
 
@@ -136,11 +126,8 @@ const CarouselComponent: React.FC = () => {
               <div className="h-8 bg-[#3f3f3f] rounded w-3/4 mb-4 animate-pulse" />
 
               <div className="flex flex-wrap gap-2 mb-4">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="h-6 bg-[#3f3f3f] rounded w-16 animate-pulse"
-                  />
+                {[1, 2, 3, 4, 5].map(i => (
+                  <div key={i} className="h-6 bg-[#3f3f3f] rounded w-16 animate-pulse" />
                 ))}
               </div>
 
@@ -170,7 +157,7 @@ const CarouselComponent: React.FC = () => {
         loop={true}
         className="w-full"
       >
-        {mangas.map((manga) => (
+        {mangas.map(manga => (
           <SwiperSlide key={manga.id}>
             <Link href={`/manga/${manga.id}`} className="block">
               <div className="relative w-full h-auto min-h-[70vh] flex items-center justify-center px-4 sm:px-8 lg:px-12 py-12">
@@ -181,7 +168,7 @@ const CarouselComponent: React.FC = () => {
                     backgroundImage: `linear-gradient(to bottom, rgba(25, 26, 28, 0.6) 10%, rgb(25, 26, 28) 90%), url(${getCoverImage(
                       manga
                     )})`,
-                    backgroundPosition: "center 25%",
+                    backgroundPosition: 'center 25%',
                   }}
                 />
 
@@ -217,9 +204,7 @@ const CarouselComponent: React.FC = () => {
                       ))}
                     </div>
 
-                    <p className="text-sm sm:text-base lg:text-lg">
-                      {getDescription(manga)}
-                    </p>
+                    <p className="text-sm sm:text-base lg:text-lg">{getDescription(manga)}</p>
                   </div>
                 </div>
               </div>

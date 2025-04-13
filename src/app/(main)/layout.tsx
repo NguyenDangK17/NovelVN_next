@@ -1,9 +1,8 @@
-import "../globals.css";
-import { ReactNode } from "react";
-import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer/Footer";
-import { LayoutWrapper } from "@/components/LayoutWrapper";
-import NextTopLoader from "nextjs-toploader";
+import '../globals.css';
+import { ReactNode } from 'react';
+import Navbar from '@/components/Navbar/Navbar';
+import { LayoutWrapper } from '@/components/LayoutWrapper';
+import NextTopLoader from 'nextjs-toploader';
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (
@@ -20,7 +19,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       />
       <Navbar />
       <main className="min-h-screen">{children}</main>
-      <Footer />
+      {/* <Footer /> */}
     </LayoutWrapper>
   );
 }

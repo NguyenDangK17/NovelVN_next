@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState, useCallback } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import "swiper/css";
-import Link from "next/link";
-import Image from "next/image";
-import { MangaDexManga, MangaDexResponse } from "@/types/mangaDex";
-import axios from "axios";
+import React, { useEffect, useState, useCallback } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import Link from 'next/link';
+import Image from 'next/image';
+import { MangaDexManga, MangaDexResponse } from '@/types/mangaDex';
+import axios from 'axios';
 
 const TrendingToday: React.FC = () => {
   const [mangas, setMangas] = useState<MangaDexManga[]>([]);
@@ -19,21 +19,18 @@ const TrendingToday: React.FC = () => {
       try {
         const threeDaysAgo = new Date();
         threeDaysAgo.setDate(threeDaysAgo.getDate() - 21);
-        const formattedDate =
-          threeDaysAgo.toISOString().split("T")[0] + "T00:00:00";
+        const formattedDate = threeDaysAgo.toISOString().split('T')[0] + 'T00:00:00';
 
         const response = await axios.get<MangaDexResponse>(
-          `https://api.mangadex.org/manga?limit=8&includedTagsMode=AND&excludedTagsMode=OR&availableTranslatedLanguage%5B%5D=vi&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&createdAtSince=${formattedDate}&order%5BfollowedCount%5D=desc&hasAvailableChapters=true`
+          `https://api.mangadex.org/manga?limit=8&includedTagsMode=AND&excludedTagsMode=OR&availableTranslatedLanguage%5B%5D=en&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&createdAtSince=${formattedDate}&order%5BfollowedCount%5D=desc&hasAvailableChapters=true`
         );
         setMangas(response.data.data);
 
         // Fetch cover images for each manga
-        const coverPromises = response.data.data.map((manga) =>
-          fetchCoverImage(manga)
-        );
+        const coverPromises = response.data.data.map(manga => fetchCoverImage(manga));
         await Promise.all(coverPromises);
       } catch (error) {
-        console.error("Error fetching manga data:", error);
+        console.error('Error fetching manga data:', error);
       } finally {
         setLoading(false);
       }
@@ -45,9 +42,7 @@ const TrendingToday: React.FC = () => {
   // Function to fetch cover image details for a manga
   const fetchCoverImage = async (manga: MangaDexManga) => {
     try {
-      const coverArtRelationship = manga.relationships.find(
-        (rel) => rel.type === "cover_art"
-      );
+      const coverArtRelationship = manga.relationships.find(rel => rel.type === 'cover_art');
 
       if (coverArtRelationship) {
         const coverResponse = await axios.get(
@@ -58,7 +53,7 @@ const TrendingToday: React.FC = () => {
           const coverData = coverResponse.data.data;
           const coverUrl = `https://uploads.mangadex.org/covers/${manga.id}/${coverData.attributes.fileName}`;
 
-          setCoverImages((prev) => ({
+          setCoverImages(prev => ({
             ...prev,
             [manga.id]: coverUrl,
           }));
@@ -77,7 +72,7 @@ const TrendingToday: React.FC = () => {
     }
 
     // Fallback image if no cover art is found
-    return "https://mangadex.org/covers/3b62f955-732c-43b2-84e7-cc1ff57896a7/7bd9d778-ad3a-4e6c-ac9a-c8f025fb07b4.png.512.jpg";
+    return 'https://mangadex.org/covers/3b62f955-732c-43b2-84e7-cc1ff57896a7/7bd9d778-ad3a-4e6c-ac9a-c8f025fb07b4.png.512.jpg';
   };
 
   // Function to get title for a manga
@@ -87,14 +82,14 @@ const TrendingToday: React.FC = () => {
       manga.attributes.title.vi ||
       manga.attributes.title.en ||
       Object.values(manga.attributes.title)[0] ||
-      "Untitled"
+      'Untitled'
     );
   };
 
   const truncateTitle = useCallback((title: string, maxLength: number) => {
     if (title.length <= maxLength) return title;
     const truncated = title.substring(0, maxLength);
-    return truncated.substring(0, truncated.lastIndexOf(" ")) + "...";
+    return truncated.substring(0, truncated.lastIndexOf(' ')) + '...';
   }, []);
 
   // Skeleton loader component
@@ -103,11 +98,8 @@ const TrendingToday: React.FC = () => {
       <>
         <div className="h-10 bg-[#2c2c2c] rounded w-48 mb-6 ml-4 animate-pulse" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div
-              key={i}
-              className="flex flex-col items-center justify-center p-4"
-            >
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+            <div key={i} className="flex flex-col items-center justify-center p-4">
               <div className="relative w-full">
                 <div className="w-full h-auto aspect-[1443/2048] bg-[#2c2c2c] rounded animate-pulse" />
                 <div className="absolute bottom-0 left-0 right-0 h-24 bg-gray-800 rounded-b">
@@ -152,7 +144,7 @@ const TrendingToday: React.FC = () => {
         }}
         className="px-4 pb-12"
       >
-        {mangas.map((manga) => (
+        {mangas.map(manga => (
           <SwiperSlide key={manga.id}>
             <div className="flex flex-col items-center justify-center hover:cursor-pointer group p-4">
               <Link href={`/manga/${manga.id}`} className="relative w-full">

@@ -6,7 +6,7 @@ import { createHttpsRequestPromise } from '@/api/utils';
 export interface ChapterData {
   chapter: string;
   id: string;
-  others: any[];
+  others: string[];
   count: number;
   volume?: string;
 }
@@ -49,12 +49,12 @@ export const processChapterList = (data: ChapterListResponse): ProcessedChapterD
   return Array.from(chapterMap.entries())
     .map(([chapterNumber, chapterData]) => ({
       chapterNumber: parseInt(chapterNumber, 10),
-      ...chapterData
+      ...chapterData,
     }))
     .sort((a, b) => a.chapterNumber - b.chapterNumber);
 };
 
-export const useChapterList = (mangaId: string) => {
+export const useChapterList = (mangaId: string, language: string = 'vi') => {
   const [chapter, setChapter] = useState<Chapter | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -71,7 +71,10 @@ export const useChapterList = (mangaId: string) => {
 
       try {
         setLoading(true);
-        const { data } = await createHttpsRequestPromise('GET', `/manga/${mangaId}/aggregate?translatedLanguage[]=vi`);
+        const { data } = await createHttpsRequestPromise(
+          'GET',
+          `/manga/${mangaId}/aggregate?translatedLanguage[]=${language}`
+        );
 
         if (isMounted) {
           setChapter(data as Chapter);
@@ -94,7 +97,7 @@ export const useChapterList = (mangaId: string) => {
     return () => {
       isMounted = false;
     };
-  }, [mangaId]);
+  }, [mangaId, language]);
 
   // Memoize the processed chapter list to avoid unnecessary recalculations
   const chapterListData = useMemo(() => {
@@ -107,6 +110,6 @@ export const useChapterList = (mangaId: string) => {
     loading,
     error,
     chapterListData,
-    rawData
+    rawData,
   };
 };
