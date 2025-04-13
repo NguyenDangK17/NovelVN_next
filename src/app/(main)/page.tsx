@@ -8,7 +8,6 @@ import { FaEye } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
 import TrendingToday from "@/components/Home/TrendingToday";
-import { useManga } from "@/hooks/useManga";
 
 // Dummy Notice Board Data
 const notices = [

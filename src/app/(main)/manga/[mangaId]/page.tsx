@@ -5,8 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import {
   FaStar,
   FaBookOpen,
-  FaDownload,
-  FaShare,
   FaGlobe,
   FaCalendarAlt,
   FaUser,
@@ -75,24 +73,20 @@ const MangaDetailPage = () => {
     const fetchMangaData = async () => {
       try {
         setLoading(true);
-        // Fetch manga data
         const mangaResponse = await axios.get(
           `https://api.mangadex.org/manga/${mangaId}`
         );
         setManga(mangaResponse.data.data);
 
-        // Find cover art relationship
         const coverArtRelationship = mangaResponse.data.data.relationships.find(
           (rel: any) => rel.type === "cover_art"
         );
 
         if (coverArtRelationship) {
-          // Fetch cover art data
           const coverResponse = await axios.get(
             `https://api.mangadex.org/cover/${coverArtRelationship.id}?includes[]=manga`
           );
 
-          // Construct cover URL
           const coverUrl = `https://uploads.mangadex.org/covers/${mangaId}/${coverResponse.data.data.attributes.fileName}`;
           setCoverArt(coverUrl);
         }

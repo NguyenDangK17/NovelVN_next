@@ -11,7 +11,7 @@ import {
   FaHome,
   FaInfo,
 } from "react-icons/fa";
-import { useChapterList, ProcessedChapterData } from "@/hooks/useChapterList";
+import { useChapterList } from "@/hooks/useChapterList";
 // import CommentSection from "../../components/Comment/CommentSection";
 
 interface ChapterData {
