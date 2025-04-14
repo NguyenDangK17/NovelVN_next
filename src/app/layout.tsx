@@ -1,6 +1,7 @@
 import './globals.css';
 import { ReactNode } from 'react';
 import { Poppins } from 'next/font/google';
+import { NavigationProvider } from '@/context/NavigationContext';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -11,7 +12,9 @@ const poppins = Poppins({
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi" className={`dark ${poppins.variable}`} suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <NavigationProvider>{children}</NavigationProvider>
+      </body>
     </html>
   );
 }

@@ -18,7 +18,7 @@ const TrendingToday: React.FC = () => {
     const fetchMangas = async () => {
       try {
         const threeDaysAgo = new Date();
-        threeDaysAgo.setDate(threeDaysAgo.getDate() - 21);
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
         const formattedDate = threeDaysAgo.toISOString().split('T')[0] + 'T00:00:00';
 
         const response = await axios.get<MangaDexResponse>(

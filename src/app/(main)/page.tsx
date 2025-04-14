@@ -1,47 +1,47 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
-import { Manga } from "@/types/manga";
-import CarouselComponent from "@/components/Home/Carousel";
-import { FaEye } from "react-icons/fa";
-import Link from "next/link";
-import Image from "next/image";
-import TrendingToday from "@/components/Home/TrendingToday";
+import { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
+import { Manga } from '@/types/manga';
+import CarouselComponent from '@/components/Home/Carousel';
+import { FaEye } from 'react-icons/fa';
+import Link from '@/components/ui/Link';
+import Image from 'next/image';
+import TrendingToday from '@/components/Home/TrendingToday';
 
 // Dummy Notice Board Data
 const notices = [
   {
     id: 1,
-    title: "Site Maintenance on Feb 20",
-    author: "Admin",
-    timestamp: "Feb 18, 2025",
+    title: 'Site Maintenance on Feb 20',
+    author: 'Admin',
+    timestamp: 'Feb 18, 2025',
     content:
-      "We will be performing scheduled maintenance on February 20th at 2:00 AM UTC. Expect some downtime during this period.",
+      'We will be performing scheduled maintenance on February 20th at 2:00 AM UTC. Expect some downtime during this period.',
   },
   {
     id: 2,
-    title: "New Comics Added!",
-    author: "Moderator",
-    timestamp: "Feb 16, 2025",
+    title: 'New Comics Added!',
+    author: 'Moderator',
+    timestamp: 'Feb 16, 2025',
     content:
       "We have added 10 new trending comics this week! Check them out in the 'Trending Today' section.",
   },
   {
     id: 3,
-    title: "Bug Fix: Login Issues Resolved",
-    author: "Admin",
-    timestamp: "Feb 15, 2025",
+    title: 'Bug Fix: Login Issues Resolved',
+    author: 'Admin',
+    timestamp: 'Feb 15, 2025',
     content:
-      "Some users were experiencing login issues. This has now been fixed. Let us know if you encounter any further problems.",
+      'Some users were experiencing login issues. This has now been fixed. Let us know if you encounter any further problems.',
   },
   {
     id: 4,
-    title: "Community Guidelines Updated",
-    author: "Moderator",
-    timestamp: "Feb 10, 2025",
+    title: 'Community Guidelines Updated',
+    author: 'Moderator',
+    timestamp: 'Feb 10, 2025',
     content:
-      "Please review the latest updates to our community guidelines. We aim to make this a friendly and welcoming place for all users.",
+      'Please review the latest updates to our community guidelines. We aim to make this a friendly and welcoming place for all users.',
   },
 ];
 
@@ -49,55 +49,51 @@ const notices = [
 const forums = [
   {
     id: 1,
-    title: "Favorite Manga of 2025?",
-    author: "MangaFan",
-    timestamp: "Feb 17, 2025",
+    title: 'Favorite Manga of 2025?',
+    author: 'MangaFan',
+    timestamp: 'Feb 17, 2025',
     replies: 24,
   },
   {
     id: 2,
-    title: "Best Plot Twists",
-    author: "PlotTwistLover",
-    timestamp: "Feb 16, 2025",
+    title: 'Best Plot Twists',
+    author: 'PlotTwistLover',
+    timestamp: 'Feb 16, 2025',
     replies: 15,
   },
   {
     id: 3,
-    title: "Recommendations for New Readers",
-    author: "NewbieGuide",
-    timestamp: "Feb 15, 2025",
+    title: 'Recommendations for New Readers',
+    author: 'NewbieGuide',
+    timestamp: 'Feb 15, 2025',
     replies: 30,
   },
   {
     id: 4,
-    title: "Upcoming Releases",
-    author: "ReleaseWatcher",
-    timestamp: "Feb 14, 2025",
+    title: 'Upcoming Releases',
+    author: 'ReleaseWatcher',
+    timestamp: 'Feb 14, 2025',
     replies: 10,
   },
 ];
 
 const Home = () => {
   const [comics, setComics] = useState<Manga[]>([]);
-  const [activeTab, setActiveTab] = useState<"weekly" | "monthly" | "all time">(
-    "weekly"
-  );
+  const [activeTab, setActiveTab] = useState<'weekly' | 'monthly' | 'all time'>('weekly');
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/mangas")
-      .then((res) => setComics(res.data));
+    axios.get('http://localhost:5000/api/mangas').then(res => setComics(res.data));
   }, []);
 
   const truncateTitle = useCallback((title: string, maxLength: number) => {
     if (title.length <= maxLength) return title;
     const truncated = title.substring(0, maxLength);
-    return truncated.substring(0, truncated.lastIndexOf(" ")) + "...";
+    return truncated.substring(0, truncated.lastIndexOf(' ')) + '...';
   }, []);
 
   const getFilteredComics = useCallback(() => {
-    if (activeTab === "weekly") return comics.slice(0, 7);
-    if (activeTab === "monthly") return comics.slice(4, 11);
+    if (activeTab === 'weekly') return comics.slice(0, 7);
+    if (activeTab === 'monthly') return comics.slice(4, 11);
     return comics.slice(2, 9);
   }, [activeTab, comics]);
 
@@ -113,24 +109,19 @@ const Home = () => {
             className="w-full h-auto aspect-[1443/2048] object-cover hover:cursor-pointer"
           />
           <h2
-            className="text-lg font-bold my-2 min-h-[3rem] line-clamp-2 overflow-hidden 
+            className="text-lg font-bold my-2 min-h-[3rem] line-clamp-2 overflow-hidden
             hover:cursor-pointer group-hover:text-primary-500"
           >
             {truncateTitle(manga.title, 40)}
           </h2>
         </Link>
       </div>
-      {[1, 2, 3].map((chapter) => (
-        <div
-          key={chapter}
-          className="flex justify-between items-center text-sm mb-1"
-        >
+      {[1, 2, 3].map(chapter => (
+        <div key={chapter} className="flex justify-between items-center text-sm mb-1">
           <p className="text-gray-400 font-medium flex items-center hover:text-gray-700 hover:cursor-pointer">
             Chapter {chapter}
           </p>
-          <p className="text-gray-600 font-medium flex items-center">
-            {chapter * 3} hours ago
-          </p>
+          <p className="text-gray-600 font-medium flex items-center">{chapter * 3} hours ago</p>
         </div>
       ))}
     </div>
@@ -149,21 +140,17 @@ const Home = () => {
           <h1 className="text-3xl font-bold p-4 text-left">Notice Board</h1>
           <div className="px-4">
             <ul className="space-y-2">
-              {notices.map((notice) => (
+              {notices.map(notice => (
                 <li
                   key={notice.id}
                   className="p-4 rounded-lg hover:bg-[#3a3a3a] transition cursor-pointer"
                   onClick={() => alert(`Opening notice: ${notice.title}`)}
                 >
-                  <h2 className="text-lg text-primary-500 font-bold">
-                    {notice.title}
-                  </h2>
+                  <h2 className="text-lg text-primary-500 font-bold">{notice.title}</h2>
                   <p className="text-sm text-gray-400">
                     By {notice.author} • {notice.timestamp}
                   </p>
-                  <p className="text-sm mt-1 text-white">
-                    {truncateTitle(notice.content, 100)}
-                  </p>
+                  <p className="text-sm mt-1 text-white">{truncateTitle(notice.content, 100)}</p>
                 </li>
               ))}
             </ul>
@@ -175,17 +162,15 @@ const Home = () => {
           <h1 className="text-3xl font-bold py-4 text-left">Ranking</h1>
           {/* Custom Tab Navigation */}
           <div className="flex mb-4">
-            {["weekly", "monthly", "all time"].map((tab) => (
+            {['weekly', 'monthly', 'all time'].map(tab => (
               <button
                 key={tab}
                 className={`flex-1 py-2 text-md font-semibold transition-colors text-center ${
                   activeTab === tab
-                    ? "border-b-2 border-primary-500 text-primary-500"
-                    : "text-gray-600"
+                    ? 'border-b-2 border-primary-500 text-primary-500'
+                    : 'text-gray-600'
                 }`}
-                onClick={() =>
-                  setActiveTab(tab as "weekly" | "monthly" | "all time")
-                }
+                onClick={() => setActiveTab(tab as 'weekly' | 'monthly' | 'all time')}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
@@ -199,19 +184,16 @@ const Home = () => {
                 key={comic._id}
                 className="flex items-center hover:text-primary-500 rounded-lg cursor-pointer group"
               >
-                <Link
-                  href={`/manga/${comic._id}`}
-                  className="flex items-center"
-                >
+                <Link href={`/manga/${comic._id}`} className="flex items-center">
                   <span
                     className={`text-2xl font-bold mr-4 ${
                       index === 0
-                        ? "text-yellow-500"
+                        ? 'text-yellow-500'
                         : index === 1
-                        ? "text-[#b5b7bb]"
-                        : index === 2
-                        ? "text-[#cd7f32]"
-                        : "text-white"
+                          ? 'text-[#b5b7bb]'
+                          : index === 2
+                            ? 'text-[#cd7f32]'
+                            : 'text-white'
                     }`}
                   >
                     {index + 1}
@@ -220,18 +202,18 @@ const Home = () => {
                     src={comic.manga_cover}
                     alt={comic.title}
                     className="w-20 h-auto object-cover"
-                    style={{ aspectRatio: "283 / 403" }}
+                    style={{ aspectRatio: '283 / 403' }}
                   />
                   <div className="ml-4">
                     <h2
                       className={`text-md xl:text-xl font-bold group-hover:text-primary-500 ${
                         index === 0
-                          ? "text-yellow-500"
+                          ? 'text-yellow-500'
                           : index === 1
-                          ? "text-[#b5b7bb]"
-                          : index === 2
-                          ? "text-[#cd7f32]"
-                          : "text-white"
+                            ? 'text-[#b5b7bb]'
+                            : index === 2
+                              ? 'text-[#cd7f32]'
+                              : 'text-white'
                       }`}
                     >
                       {truncateTitle(comic.title, 30)}
@@ -264,7 +246,7 @@ const Home = () => {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
-            {comics.slice(0, 5).map((comic) => (
+            {comics.slice(0, 5).map(comic => (
               <MangaCard key={comic._id} manga={comic} />
             ))}
           </div>
@@ -279,7 +261,7 @@ const Home = () => {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
-            {comics.slice(0, 10).map((comic) => (
+            {comics.slice(0, 10).map(comic => (
               <MangaCard key={comic._id} manga={comic} />
             ))}
           </div>
@@ -290,7 +272,7 @@ const Home = () => {
           <h1 className="text-3xl font-bold py-4 text-left">Forums</h1>
           <div className="rounded-lg shadow-md">
             <ul className="space-y-2">
-              {forums.map((forum) => (
+              {forums.map(forum => (
                 <li
                   key={forum.id}
                   className="py-2 rounded-lg transition cursor-pointer"
@@ -300,94 +282,77 @@ const Home = () => {
                     {forum.title}
                   </h2>
                   <p className="text-sm text-gray-400">
-                    By {forum.author} • {forum.timestamp} • {forum.replies}{" "}
-                    replies
+                    By {forum.author} • {forum.timestamp} • {forum.replies} replies
                   </p>
                 </li>
               ))}
             </ul>
           </div>
-          <h1 className="text-3xl font-bold py-4 mt-6 text-left">
-            Latest Comments
-          </h1>
+          <h1 className="text-3xl font-bold py-4 mt-6 text-left">Latest Comments</h1>
           <div className="rounded-lg shadow-md">
             <ul className="space-y-4">
               {[
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "User123",
-                  comment: "This manga is 🔥!",
-                  comicTitle: "Comic Title 1",
-                  timestamp: "2 hours ago",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'User123',
+                  comment: 'This manga is 🔥!',
+                  comicTitle: 'Comic Title 1',
+                  timestamp: '2 hours ago',
                 },
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "MangaLover",
-                  comment: "When’s the next update?",
-                  comicTitle: "Comic Title 2",
-                  timestamp: "5 hours ago",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'MangaLover',
+                  comment: 'When’s the next update?',
+                  comicTitle: 'Comic Title 2',
+                  timestamp: '5 hours ago',
                 },
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "Reader99",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'Reader99',
                   comment:
-                    "Plot twist was insane! What an insane chapter! Good work trans, keep it up!",
-                  comicTitle:
-                    "Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3",
-                  timestamp: "1 day ago",
+                    'Plot twist was insane! What an insane chapter! Good work trans, keep it up!',
+                  comicTitle: 'Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3',
+                  timestamp: '1 day ago',
                 },
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "Reader99",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'Reader99',
                   comment:
-                    "Plot twist was insane! What an insane chapter! Good work trans, keep it up!",
-                  comicTitle:
-                    "Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3",
-                  timestamp: "1 day ago",
+                    'Plot twist was insane! What an insane chapter! Good work trans, keep it up!',
+                  comicTitle: 'Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3',
+                  timestamp: '1 day ago',
                 },
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "Reader99",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'Reader99',
                   comment:
-                    "Plot twist was insane! What an insane chapter! Good work trans, keep it up!",
-                  comicTitle:
-                    "Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3",
-                  timestamp: "1 day ago",
+                    'Plot twist was insane! What an insane chapter! Good work trans, keep it up!',
+                  comicTitle: 'Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3',
+                  timestamp: '1 day ago',
                 },
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "Reader99",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'Reader99',
                   comment:
-                    "Plot twist was insane! What an insane chapter! Good work trans, keep it up!",
-                  comicTitle:
-                    "Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3",
-                  timestamp: "1 day ago",
+                    'Plot twist was insane! What an insane chapter! Good work trans, keep it up!',
+                  comicTitle: 'Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3',
+                  timestamp: '1 day ago',
                 },
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "Reader99",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'Reader99',
                   comment:
-                    "Plot twist was insane! What an insane chapter! Good work trans, keep it up!",
-                  comicTitle:
-                    "Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3",
-                  timestamp: "1 day ago",
+                    'Plot twist was insane! What an insane chapter! Good work trans, keep it up!',
+                  comicTitle: 'Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3',
+                  timestamp: '1 day ago',
                 },
                 {
-                  avatar:
-                    "https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg",
-                  username: "Reader99",
+                  avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
+                  username: 'Reader99',
                   comment:
-                    "Plot twist was insane! What an insane chapter! Good work trans, keep it up!",
-                  comicTitle:
-                    "Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3",
-                  timestamp: "1 day ago",
+                    'Plot twist was insane! What an insane chapter! Good work trans, keep it up!',
+                  comicTitle: 'Comic Title 3 Comic Title 3 Comic Title 3 Comic Title 3',
+                  timestamp: '1 day ago',
                 },
               ].map((comment, index) => (
                 <li key={index} className="flex flex-col">
@@ -404,12 +369,8 @@ const Home = () => {
                     />
                     <div className="flex-1 mb-2">
                       <div className="flex justify-between items-start">
-                        <span className="font-bold text-white">
-                          {comment.username}
-                        </span>
-                        <span className="text-sm text-gray-400">
-                          {comment.timestamp}
-                        </span>
+                        <span className="font-bold text-white">{comment.username}</span>
+                        <span className="text-sm text-gray-400">{comment.timestamp}</span>
                       </div>
                       <p className="text-sm text-gray-400 mt-1">
                         {truncateTitle(comment.comment, 60)}

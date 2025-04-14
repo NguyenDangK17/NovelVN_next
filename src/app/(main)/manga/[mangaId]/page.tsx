@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import {
   FaStar,
   FaBookOpen,
@@ -16,6 +16,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import Loading from '@/app/loading';
 import { useChapterList } from '@/hooks/useChapterList';
+import { useNavigation } from '@/context/NavigationContext';
 
 // Define the manga data type based on the new API structure
 interface MangaData {
@@ -56,7 +57,7 @@ interface MangaData {
 }
 
 const MangaDetailPage = () => {
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const params = useParams();
   const mangaId = params.mangaId as string;
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -344,7 +345,7 @@ const MangaDetailPage = () => {
                     <div
                       key={chapter.id}
                       className="p-4 hover:bg-[#333333] cursor-pointer flex justify-between items-center"
-                      onClick={() => router.push(`/chapter/${chapter.id}?lang=${selectedLanguage}`)}
+                      onClick={() => navigate(`/chapter/${chapter.id}?lang=${selectedLanguage}`)}
                     >
                       <div className="flex items-center gap-3 text-sm">
                         <FaBookOpen className="text-gray-400" />

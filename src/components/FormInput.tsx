@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export interface FormInputProps {
   label: string;
@@ -26,9 +26,7 @@ export const FormInput: React.FC<FormInputProps> = ({
       name={name}
       id={name}
       className={`bg-[#3d414a] text-white rounded-lg block w-full p-2.5 ${
-        error
-          ? "border-2 border-red-500"
-          : "focus:ring-primary-600 focus:border-primary-600"
+        error ? 'border-2 border-red-500' : 'focus:ring-primary-600 focus:border-primary-600'
       }`}
       value={value}
       onChange={onChange}

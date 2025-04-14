@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import Loading from '@/app/loading';
-import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { FaBackward, FaExclamationCircle, FaForward, FaHome, FaInfo } from 'react-icons/fa';
 import { useChapterList } from '@/hooks/useChapterList';
+import { useNavigation } from '@/context/NavigationContext';
 // import CommentSection from "../../components/Comment/CommentSection";
 
 interface ChapterData {
@@ -23,7 +24,7 @@ interface MangaInfo {
 }
 
 const MangaChapterPage: React.FC = () => {
-  const router = useRouter();
+  const { navigate } = useNavigation();
   const params = useParams();
   const searchParams = useSearchParams();
   const chapterId = params.chapterId as string;
@@ -167,7 +168,7 @@ const MangaChapterPage: React.FC = () => {
         const numB = parseFloat(b.chapter);
         return numA - numB;
       });
-      router.push(`/chapter/${sortedChapters[currentChapterIndex + 1].id}?lang=${language}`);
+      navigate(`/chapter/${sortedChapters[currentChapterIndex + 1].id}?lang=${language}`);
     }
   };
 
@@ -179,12 +180,12 @@ const MangaChapterPage: React.FC = () => {
         const numB = parseFloat(b.chapter);
         return numA - numB;
       });
-      router.push(`/chapter/${sortedChapters[currentChapterIndex - 1].id}?lang=${language}`);
+      navigate(`/chapter/${sortedChapters[currentChapterIndex - 1].id}?lang=${language}`);
     }
   };
 
   const goToMangaPage = () => {
-    router.push(`/manga/${mangaInfo.id}`);
+    navigate(`/manga/${mangaInfo.id}`);
   };
 
   const handleUserClick = () => {
