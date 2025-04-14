@@ -1,9 +1,11 @@
-import React, { memo, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Novel } from "@/types/novel";
-import ProfileInformation from "./ProfileInformation";
-import Groups from "./Groups";
-import Novels from "./Novels";
+'use client';
+
+import React, { memo, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Novel } from '@/types/novel';
+import ProfileInformation from './ProfileInformation';
+import Groups from './Groups';
+import Novels from './Novels';
 
 interface ProfileTabsProps {
   comics: Novel[];
@@ -12,7 +14,7 @@ interface ProfileTabsProps {
 const ProfileTabs: React.FC<ProfileTabsProps> = memo(({ comics }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tab = searchParams.get("tab") || "info";
+  const tab = searchParams.get('tab') || 'info';
 
   const handleTabChange = useCallback(
     (tabName: string) => {
@@ -21,7 +23,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = memo(({ comics }) => {
     [router]
   );
 
-  const tabs = ["info", "groups", "novels"] as const;
+  const tabs = ['info', 'groups', 'novels'] as const;
   const tabPosition = tabs.indexOf(tab as (typeof tabs)[number]);
 
   return (
@@ -31,19 +33,19 @@ const ProfileTabs: React.FC<ProfileTabsProps> = memo(({ comics }) => {
           <div
             className={`transition-all duration-300 ease-in-out bg-[#4f4f4f] rounded ${
               tabPosition === 0
-                ? "w-1/3"
+                ? 'w-1/3'
                 : tabPosition === 1
-                ? "w-1/3 translate-x-full"
-                : "w-1/3 translate-x-[200%]"
+                  ? 'w-1/3 translate-x-full'
+                  : 'w-1/3 translate-x-[200%]'
             }`}
           />
         </div>
-        {tabs.map((t) => (
+        {tabs.map(t => (
           <button
             key={t}
             onClick={() => handleTabChange(t)}
             className={`relative z-10 flex-1 px-4 py-2 font-bold rounded ${
-              tab === t ? "text-white" : "text-[#4e4e4e] hover:text-[#6f6f6f]"
+              tab === t ? 'text-white' : 'text-[#4e4e4e] hover:text-[#6f6f6f]'
             }`}
           >
             {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -52,14 +54,14 @@ const ProfileTabs: React.FC<ProfileTabsProps> = memo(({ comics }) => {
       </div>
 
       <div>
-        {tab === "info" && <ProfileInformation />}
-        {tab === "groups" && <Groups />}
-        {tab === "novels" && <Novels comics={comics} />}
+        {tab === 'info' && <ProfileInformation />}
+        {tab === 'groups' && <Groups />}
+        {tab === 'novels' && <Novels comics={comics} />}
       </div>
     </>
   );
 });
 
-ProfileTabs.displayName = "ProfileTabs";
+ProfileTabs.displayName = 'ProfileTabs';
 
 export default ProfileTabs;

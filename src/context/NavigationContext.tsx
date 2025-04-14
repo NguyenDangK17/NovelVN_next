@@ -7,6 +7,7 @@ import React, {
   useEffect,
   ReactNode,
   useCallback,
+  Suspense,
 } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import Loading from '@/app/loading';
@@ -107,9 +108,13 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <NavigationContext.Provider value={{ isNavigating, navigate, startNavigation, endNavigation }}>
-      {isNavigating && <Loading />}
-      {children}
-    </NavigationContext.Provider>
+    <Suspense fallback={<Loading />}>
+      <NavigationContext.Provider
+        value={{ isNavigating, navigate, startNavigation, endNavigation }}
+      >
+        {/* {isNavigating && <Loading />} */}
+        {children}
+      </NavigationContext.Provider>
+    </Suspense>
   );
 }

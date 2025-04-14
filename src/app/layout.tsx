@@ -1,5 +1,5 @@
 import './globals.css';
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { Poppins } from 'next/font/google';
 import { NavigationProvider } from '@/context/NavigationContext';
 
@@ -13,7 +13,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi" className={`dark ${poppins.variable}`} suppressHydrationWarning>
       <body>
-        <NavigationProvider>{children}</NavigationProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <NavigationProvider>{children}</NavigationProvider>
+        </Suspense>
       </body>
     </html>
   );

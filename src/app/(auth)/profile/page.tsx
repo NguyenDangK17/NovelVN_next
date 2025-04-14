@@ -1,48 +1,42 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState, useCallback, memo } from "react";
-import { useAuth } from "@/context/UserContext";
-import { useSearchParams, useRouter } from "next/navigation";
-import axios from "axios";
-import { Novel } from "@/types/novel";
-import { FaEnvelope, FaUser, FaLock } from "react-icons/fa";
-import { updateUser } from "@/utils/userUtils";
-import { API_ENDPOINTS } from "@/config/api";
-import { ASSETS } from "@/config/constants";
-import Image from "next/image";
+import React, { useEffect, useState, useCallback, memo } from 'react';
+import { useAuth } from '@/context/UserContext';
+import { useSearchParams, useRouter } from 'next/navigation';
+import axios from 'axios';
+import { Novel } from '@/types/novel';
+import { FaEnvelope, FaUser, FaLock } from 'react-icons/fa';
+import { updateUser } from '@/utils/userUtils';
+import { API_ENDPOINTS } from '@/config/api';
+import { ASSETS } from '@/config/constants';
+import Image from 'next/image';
 
 const ProfileHeader: React.FC = memo(() => {
   const { user, setUser } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
 
-  if (!user) return null;
-
   const handleAvatarChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (!event.target.files?.[0]) return;
+      if (!event.target.files?.[0] || !user) return;
 
       setIsUploading(true);
       const file = event.target.files[0];
       const formData = new FormData();
-      formData.append("avatar", file);
-      formData.append("userId", user._id);
+      formData.append('avatar', file);
+      formData.append('userId', user._id);
 
       try {
-        const response = await axios.post(
-          API_ENDPOINTS.UPLOAD_AVATAR,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
+        const response = await axios.post(API_ENDPOINTS.UPLOAD_AVATAR, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
 
         const updatedUser = { ...user, avatar: response.data.avatar };
         updateUser(updatedUser, setUser);
       } catch (error) {
-        console.error("Error updating avatar:", error);
+        console.error('Error updating avatar:', error);
       } finally {
         setIsUploading(false);
       }
@@ -50,20 +44,22 @@ const ProfileHeader: React.FC = memo(() => {
     [user, setUser]
   );
 
+  if (!user) return null;
+
   return (
     <div className="relative h-[300px] md:h-[450px] bg-[#2c2c2c]">
       <div
         className="absolute inset-0 w-full h-[200px] md:h-[350px] bg-cover bg-center"
         style={{
           backgroundImage: `url(${ASSETS.PROFILE_BACKGROUND})`,
-          backgroundPosition: "center 25%",
+          backgroundPosition: 'center 25%',
         }}
       />
       <div className="absolute bottom-0 left-0 w-full">
         <div className="max-w-7xl mx-auto flex items-end p-6">
           <div className="w-32 md:w-40 h-auto aspect-[1/1] rounded-full overflow-hidden relative">
             <Image
-              src={user?.avatar || "/default-avatar.png"}
+              src={user?.avatar || '/default-avatar.png'}
               alt="Profile"
               width={160}
               height={160}
@@ -84,9 +80,7 @@ const ProfileHeader: React.FC = memo(() => {
             )}
           </div>
           <div className="ml-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-white">
-              {user?.username}
-            </h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-white">{user?.username}</h1>
             <p className="text-lg text-gray-300">Unemployed Hooman</p>
           </div>
         </div>
@@ -95,18 +89,16 @@ const ProfileHeader: React.FC = memo(() => {
   );
 });
 
-ProfileHeader.displayName = "ProfileHeader";
+ProfileHeader.displayName = 'ProfileHeader';
 
 const ProfileInfo: React.FC = memo(() => (
   <div className="bg-[#2a2a2a] p-6 min-h-[400px] rounded-lg">
     <h2 className="text-xl font-bold text-white mb-3">About</h2>
-    <p className="text-white">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit...
-    </p>
+    <p className="text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
   </div>
 ));
 
-ProfileInfo.displayName = "ProfileInfo";
+ProfileInfo.displayName = 'ProfileInfo';
 
 const ProfileInformation: React.FC = memo(() => {
   const { user } = useAuth();
@@ -119,18 +111,14 @@ const ProfileInformation: React.FC = memo(() => {
           <FaEnvelope className="text-gray-400 text-lg" />
           <div>
             <p className="text-gray-400 text-sm">Email</p>
-            <p className="text-white font-medium">
-              {user?.email || "Not provided"}
-            </p>
+            <p className="text-white font-medium">{user?.email || 'Not provided'}</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
           <FaUser className="text-gray-400 text-lg" />
           <div>
             <p className="text-gray-400 text-sm">Username</p>
-            <p className="text-white font-medium">
-              {user?.username || "Not provided"}
-            </p>
+            <p className="text-white font-medium">{user?.username || 'Not provided'}</p>
           </div>
         </div>
         <div className="flex items-center space-x-3">
@@ -155,18 +143,16 @@ const ProfileInformation: React.FC = memo(() => {
   );
 });
 
-ProfileInformation.displayName = "ProfileInformation";
+ProfileInformation.displayName = 'ProfileInformation';
 
 const Groups: React.FC = memo(() => (
   <div className="h-full">
     <h2 className="text-xl font-bold text-white mb-3">Groups</h2>
-    <p className="text-white">
-      Here you can find all the groups you are part of.
-    </p>
+    <p className="text-white">Here you can find all the groups you are part of.</p>
   </div>
 ));
 
-Groups.displayName = "Groups";
+Groups.displayName = 'Groups';
 
 const NovelCard: React.FC<{ comic: Novel }> = memo(({ comic }) => {
   const router = useRouter();
@@ -191,7 +177,7 @@ const NovelCard: React.FC<{ comic: Novel }> = memo(({ comic }) => {
           {comic.title}
         </h2>
         <div className="mt-auto space-y-1">
-          {[1, 2, 3].map((chapter) => (
+          {[1, 2, 3].map(chapter => (
             <div
               key={chapter}
               className="flex justify-between items-center text-sm text-gray-400 hover:text-gray-300 hover:cursor-pointer transition"
@@ -206,10 +192,10 @@ const NovelCard: React.FC<{ comic: Novel }> = memo(({ comic }) => {
   );
 });
 
-NovelCard.displayName = "NovelCard";
+NovelCard.displayName = 'NovelCard';
 
 const Novels: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
-  console.log("Novels component received comics:", comics);
+  console.log('Novels component received comics:', comics);
 
   // Ensure comics is an array
   const comicsArray = Array.isArray(comics) ? comics : [];
@@ -222,7 +208,7 @@ const Novels: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {comicsArray.slice(0, 6).map((comic) => (
+          {comicsArray.slice(0, 6).map(comic => (
             <NovelCard key={comic._id} comic={comic} />
           ))}
         </div>
@@ -231,12 +217,12 @@ const Novels: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
   );
 });
 
-Novels.displayName = "Novels";
+Novels.displayName = 'Novels';
 
 const ProfileTabs: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tab = searchParams.get("tab") || "info";
+  const tab = searchParams.get('tab') || 'info';
 
   const handleTabChange = useCallback(
     (tabName: string) => {
@@ -245,7 +231,7 @@ const ProfileTabs: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
     [router]
   );
 
-  const tabs = ["info", "groups", "novels"] as const;
+  const tabs = ['info', 'groups', 'novels'] as const;
   const tabPosition = tabs.indexOf(tab as (typeof tabs)[number]);
 
   return (
@@ -255,19 +241,19 @@ const ProfileTabs: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
           <div
             className={`transition-all duration-300 ease-in-out bg-[#4f4f4f] rounded ${
               tabPosition === 0
-                ? "w-1/3"
+                ? 'w-1/3'
                 : tabPosition === 1
-                ? "w-1/3 translate-x-full"
-                : "w-1/3 translate-x-[200%]"
+                  ? 'w-1/3 translate-x-full'
+                  : 'w-1/3 translate-x-[200%]'
             }`}
           />
         </div>
-        {tabs.map((t) => (
+        {tabs.map(t => (
           <button
             key={t}
             onClick={() => handleTabChange(t)}
             className={`relative z-10 flex-1 px-4 py-2 font-bold rounded ${
-              tab === t ? "text-white" : "text-[#4e4e4e] hover:text-[#6f6f6f]"
+              tab === t ? 'text-white' : 'text-[#4e4e4e] hover:text-[#6f6f6f]'
             }`}
           >
             {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -276,15 +262,15 @@ const ProfileTabs: React.FC<{ comics: Novel[] }> = memo(({ comics }) => {
       </div>
 
       <div>
-        {tab === "info" && <ProfileInformation />}
-        {tab === "groups" && <Groups />}
-        {tab === "novels" && <Novels comics={comics} />}
+        {tab === 'info' && <ProfileInformation />}
+        {tab === 'groups' && <Groups />}
+        {tab === 'novels' && <Novels comics={comics} />}
       </div>
     </>
   );
 });
 
-ProfileTabs.displayName = "ProfileTabs";
+ProfileTabs.displayName = 'ProfileTabs';
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -295,7 +281,7 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (!user) {
-      router.push("/");
+      router.push('/');
     } else {
       setLoading(false);
     }
@@ -305,26 +291,24 @@ const ProfilePage: React.FC = () => {
     const fetchComics = async () => {
       try {
         const res = await axios.get(API_ENDPOINTS.NOVELS);
-        console.log("API Response:", res.data);
-
         // Ensure comics is always an array
         if (Array.isArray(res.data)) {
           setComics(res.data);
-        } else if (res.data && typeof res.data === "object") {
+        } else if (res.data && typeof res.data === 'object') {
           // If the API returns an object with a data property that contains the array
           if (Array.isArray(res.data.data)) {
             setComics(res.data.data);
           } else {
-            console.error("API response is not in expected format:", res.data);
+            console.error('API response is not in expected format:', res.data);
             setComics([]);
           }
         } else {
-          console.error("API response is not an array or object:", res.data);
+          console.error('API response is not an array or object:', res.data);
           setComics([]);
         }
       } catch (error) {
-        console.error("Failed to load comics", error);
-        setError("Failed to load comics. Please try again later.");
+        console.error('Failed to load comics', error);
+        setError('Failed to load comics. Please try again later.');
         setComics([]);
       }
     };
