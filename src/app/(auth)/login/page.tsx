@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import React, { useState, useCallback } from "react";
-import axios from "axios";
-import Image from "next/image";
-import { FormInput } from "@/components/FormInput";
-import { API_ENDPOINTS } from "@/config/api";
-import { ASSETS } from "@/config/constants";
+import React, { useState, useCallback } from 'react';
+import axios from 'axios';
+import Image from 'next/image';
+import { FormInput } from '@/components/FormInput';
+import { API_ENDPOINTS } from '@/config/api';
+import { ASSETS } from '@/config/constants';
+import Link from 'next/link';
 
 interface LoginFormData {
   email: string;
@@ -20,17 +21,16 @@ interface LoginErrors {
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange =
-    (field: keyof LoginFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+    (field: keyof LoginFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData(prev => ({ ...prev, [field]: e.target.value }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     };
 
   const handleLogin = useCallback(
@@ -43,30 +43,30 @@ const LoginPage: React.FC = () => {
         const response = await axios.post(API_ENDPOINTS.LOGIN, formData);
 
         if (response.status === 200) {
-          localStorage.setItem("user", JSON.stringify(response.data));
-          window.location.replace("/");
+          localStorage.setItem('user', JSON.stringify(response.data));
+          window.location.replace('/');
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response?.status === 401) {
             setErrors({
-              general: "Invalid email or password",
+              general: 'Invalid email or password',
             });
           } else if (error.response?.status === 400) {
             const errorMessage = error.response.data.message;
-            if (errorMessage.includes("Email")) {
-              setErrors((prev) => ({ ...prev, email: errorMessage }));
-            } else if (errorMessage.includes("Password")) {
-              setErrors((prev) => ({ ...prev, password: errorMessage }));
+            if (errorMessage.includes('Email')) {
+              setErrors(prev => ({ ...prev, email: errorMessage }));
+            } else if (errorMessage.includes('Password')) {
+              setErrors(prev => ({ ...prev, password: errorMessage }));
             }
           } else {
             setErrors({
-              general: "An error occurred. Please try again later.",
+              general: 'An error occurred. Please try again later.',
             });
           }
         } else {
           setErrors({
-            general: "An unexpected error occurred. Please try again.",
+            general: 'An unexpected error occurred. Please try again.',
           });
         }
       } finally {
@@ -82,16 +82,10 @@ const LoginPage: React.FC = () => {
       style={{ backgroundImage: `url(${ASSETS.BACKGROUND_IMAGE})` }}
     >
       <div className="flex items-center justify-center mb-6">
-        <Image
-          width={48}
-          height={48}
-          className="mr-2"
-          src={ASSETS.LOGO}
-          alt="logo"
-        />
+        <Image width={48} height={48} className="mr-2" src={ASSETS.LOGO} alt="logo" />
         <span
           className="text-3xl font-bold text-white hover:cursor-pointer"
-          onClick={() => window.location.replace("/")}
+          onClick={() => window.location.replace('/')}
         >
           MangaVN
         </span>
@@ -107,7 +101,7 @@ const LoginPage: React.FC = () => {
               type="email"
               name="email"
               value={formData.email}
-              onChange={handleInputChange("email")}
+              onChange={handleInputChange('email')}
               error={errors.email}
             />
             <FormInput
@@ -115,7 +109,7 @@ const LoginPage: React.FC = () => {
               type="password"
               name="password"
               value={formData.password}
-              onChange={handleInputChange("password")}
+              onChange={handleInputChange('password')}
               error={errors.password}
             />
 
@@ -142,10 +136,7 @@ const LoginPage: React.FC = () => {
                   </label>
                 </div>
               </div>
-              <a
-                href="#"
-                className="text-sm font-medium text-primary-600 hover:underline"
-              >
+              <a href="#" className="text-sm font-medium text-primary-600 hover:underline">
                 Forgot password?
               </a>
             </div>
@@ -154,16 +145,13 @@ const LoginPage: React.FC = () => {
               className="w-full text-white bg-primary-500 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
-            <p className="text-sm font-light text-gray-500 text-center">
-              Don't have an account yet?{" "}
-              <a
-                href="/signup"
-                className="font-medium text-primary-600 hover:underline"
-              >
+            <p className="text-sm text-gray-400">
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="text-primary-500 hover:underline">
                 Sign up
-              </a>
+              </Link>
             </p>
           </form>
         </div>

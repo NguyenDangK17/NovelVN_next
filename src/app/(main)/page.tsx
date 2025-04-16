@@ -8,6 +8,7 @@ import { FaEye } from 'react-icons/fa';
 import Link from '@/components/ui/Link';
 import Image from 'next/image';
 import TrendingToday from '@/components/Home/TrendingToday';
+import ReadingHistory from '@/components/Home/ReadingHistory';
 
 // Dummy Notice Board Data
 const notices = [
@@ -265,6 +266,8 @@ const Home = () => {
               <MangaCard key={comic._id} manga={comic} />
             ))}
           </div>
+
+          <ReadingHistory />
         </div>
 
         {/* Comments Section - 3/12 width */}
@@ -302,7 +305,7 @@ const Home = () => {
                 {
                   avatar: 'https://i.pinimg.com/736x/c4/14/27/c4142714e3d7023b30965b445bb5fb6d.jpg',
                   username: 'MangaLover',
-                  comment: 'When’s the next update?',
+                  comment: 'Whens the next update?',
                   comicTitle: 'Comic Title 2',
                   timestamp: '5 hours ago',
                 },

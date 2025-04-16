@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import React, { useState, useCallback } from "react";
-import axios from "axios";
-import { FormInput } from "@/components/FormInput";
-import { validateSignupForm } from "@/utils/validation";
-import { API_ENDPOINTS } from "@/config/api";
-import { ASSETS } from "@/config/constants";
+import Image from 'next/image';
+import React, { useState, useCallback } from 'react';
+import axios from 'axios';
+import { FormInput } from '@/components/FormInput';
+import { validateSignupForm } from '@/utils/validation';
+import { API_ENDPOINTS } from '@/config/api';
+import { ASSETS } from '@/config/constants';
+import Link from 'next/link';
 
 interface SignupFormData {
   username: string;
@@ -25,19 +26,18 @@ interface FormErrors {
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState<SignupFormData>({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange =
-    (field: keyof SignupFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+    (field: keyof SignupFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData(prev => ({ ...prev, [field]: e.target.value }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     };
 
   const handleSignup = useCallback(
@@ -60,20 +60,20 @@ const SignupPage: React.FC = () => {
         });
 
         if (response.status === 201) {
-          window.location.replace("/login");
+          window.location.replace('/login');
         }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 400) {
           const errorMessage = error.response.data.message;
-          if (errorMessage.includes("Email")) {
-            setErrors((prev) => ({ ...prev, email: errorMessage }));
-          } else if (errorMessage.includes("Username")) {
-            setErrors((prev) => ({ ...prev, username: errorMessage }));
+          if (errorMessage.includes('Email')) {
+            setErrors(prev => ({ ...prev, email: errorMessage }));
+          } else if (errorMessage.includes('Username')) {
+            setErrors(prev => ({ ...prev, username: errorMessage }));
           }
         } else {
-          setErrors((prev) => ({
+          setErrors(prev => ({
             ...prev,
-            general: "Signup failed. Please try again.",
+            general: 'Signup failed. Please try again.',
           }));
         }
       } finally {
@@ -89,16 +89,10 @@ const SignupPage: React.FC = () => {
       style={{ backgroundImage: `url(${ASSETS.BACKGROUND_IMAGE})` }}
     >
       <div className="flex items-center justify-center mb-6">
-        <Image
-          width={48}
-          height={48}
-          className="mr-2"
-          src={ASSETS.LOGO}
-          alt="logo"
-        />
+        <Image width={48} height={48} className="mr-2" src={ASSETS.LOGO} alt="logo" />
         <span
           className="text-3xl font-bold text-white hover:cursor-pointer"
-          onClick={() => window.location.replace("/")}
+          onClick={() => window.location.replace('/')}
         >
           MangaVN
         </span>
@@ -115,7 +109,7 @@ const SignupPage: React.FC = () => {
               type="text"
               name="username"
               value={formData.username}
-              onChange={handleInputChange("username")}
+              onChange={handleInputChange('username')}
               error={errors.username}
             />
             <FormInput
@@ -123,7 +117,7 @@ const SignupPage: React.FC = () => {
               type="email"
               name="email"
               value={formData.email}
-              onChange={handleInputChange("email")}
+              onChange={handleInputChange('email')}
               error={errors.email}
             />
             <FormInput
@@ -131,7 +125,7 @@ const SignupPage: React.FC = () => {
               type="password"
               name="password"
               value={formData.password}
-              onChange={handleInputChange("password")}
+              onChange={handleInputChange('password')}
               error={errors.password}
             />
             <FormInput
@@ -139,31 +133,24 @@ const SignupPage: React.FC = () => {
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
-              onChange={handleInputChange("confirmPassword")}
+              onChange={handleInputChange('confirmPassword')}
               error={errors.confirmPassword}
             />
 
-            {errors.general && (
-              <p className="text-red-500 text-sm text-center">
-                {errors.general}
-              </p>
-            )}
+            {errors.general && <p className="text-red-500 text-sm text-center">{errors.general}</p>}
 
             <button
               type="submit"
               className="w-full text-white bg-primary-500 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               disabled={isLoading}
             >
-              {isLoading ? "Signing up..." : "Sign up"}
+              {isLoading ? 'Signing up...' : 'Sign up'}
             </button>
-            <p className="text-sm font-light text-gray-500 text-center">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="font-medium text-primary-600 hover:underline"
-              >
-                Login
-              </a>
+            <p className="text-sm text-gray-400">
+              Already have an account?{' '}
+              <Link href="/login" className="text-primary-500 hover:underline">
+                Sign in
+              </Link>
             </p>
           </form>
         </div>

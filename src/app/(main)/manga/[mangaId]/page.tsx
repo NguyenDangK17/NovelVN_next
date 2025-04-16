@@ -244,7 +244,7 @@ const MangaDetailPage = () => {
           }}
         />
         <div className="absolute inset-0 bg-black bg-opacity-60" />
-        <div className="relative z-10 px-4 py-6 sm:px-6 md:px-8 lg:px-12 flex items-center justify-start mt-12">
+        <div className="relative z-10 px-4 py-12 sm:px-6 md:px-8 lg:px-12 flex items-center justify-start mt-12">
           <div className="flex flex-row items-stretch gap-4 w-full flex-wrap">
             <div className="relative w-[30%] max-w-[200px] min-w-[100px] aspect-[1443/2048] flex-shrink-0">
               <Image

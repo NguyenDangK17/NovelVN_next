@@ -7,6 +7,7 @@ import axios from 'axios';
 import { FaBackward, FaExclamationCircle, FaForward, FaHome, FaInfo } from 'react-icons/fa';
 import { useChapterList } from '@/hooks/useChapterList';
 import { useNavigation } from '@/context/NavigationContext';
+import { addToReadingHistory } from '@/utils/history';
 // import CommentSection from "../../components/Comment/CommentSection";
 
 interface ChapterData {
@@ -20,22 +21,30 @@ interface ChapterData {
 interface MangaInfo {
   id: string;
   title: string;
-  coverUrl: string;
+  coverUrl?: string;
+}
+
+interface Chapter {
+  id: string;
+  chapter: string;
+  title?: string;
+  volume?: string;
+  language?: string;
 }
 
 const MangaChapterPage: React.FC = () => {
-  const { navigate } = useNavigation();
   const params = useParams();
   const searchParams = useSearchParams();
+  const { navigate } = useNavigation();
   const chapterId = params.chapterId as string;
   const language = searchParams.get('lang') || 'en';
-
   const [chapterData, setChapterData] = useState<ChapterData | null>(null);
-  const [loadedImages, setLoadedImages] = useState(5);
+  const [loading, setLoading] = useState(true);
+  const [mangaInfo, setMangaInfo] = useState<MangaInfo | null>(null);
+  const [currentChapter, setCurrentChapter] = useState<Chapter | null>(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState<number | null>(null);
   const [showNav, setShowNav] = useState(false);
-  const [mangaInfo, setMangaInfo] = useState<MangaInfo | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadedImages, setLoadedImages] = useState(5);
 
   // Get manga ID from chapter ID
   const [mangaId, setMangaId] = useState<string | null>(null);
@@ -134,14 +143,17 @@ const MangaChapterPage: React.FC = () => {
   // Scroll-based lazy loading
   useEffect(() => {
     let ticking = false;
-
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          setLoadedImages(prev =>
-            chapterData ? Math.min(prev + 5, chapterData.chapter.data.length) : prev
-          );
-          setShowNav(false);
+          const foundChapter = chapterListData.find(chapter => chapter.id === chapterId);
+          if (foundChapter) {
+            setCurrentChapter(foundChapter);
+          }
+          setLoadedImages(prev => {
+            if (!chapterData) return prev;
+            return Math.min(prev + 5, chapterData.chapter.data.length);
+          });
           ticking = false;
         });
         ticking = true;
@@ -150,7 +162,20 @@ const MangaChapterPage: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [chapterData]);
+  }, [chapterData, chapterListData, chapterId]);
+
+  useEffect(() => {
+    if (mangaInfo && currentChapter) {
+      addToReadingHistory(
+        {
+          _id: mangaInfo.id,
+          title: mangaInfo.title,
+          manga_cover: mangaInfo.coverUrl || '',
+        },
+        parseFloat(currentChapter.chapter)
+      );
+    }
+  }, [mangaInfo, currentChapter]);
 
   if (loading || !chapterData || !mangaInfo) return <Loading />;
 
@@ -158,7 +183,7 @@ const MangaChapterPage: React.FC = () => {
   const imageFiles = chapter.data;
 
   // Find current chapter info
-  const currentChapter = chapterListData.find(chapter => chapter.id === chapterId);
+  const currentChapterInfo = chapterListData.find(chapter => chapter.id === chapterId);
 
   const goToNextChapter = () => {
     if (currentChapterIndex !== null && currentChapterIndex < chapterListData.length - 1) {
@@ -196,7 +221,7 @@ const MangaChapterPage: React.FC = () => {
     <div className="max-w-4xl mx-auto px-8 py-12 relative text-center" onClick={handleUserClick}>
       <h1 className="text-3xl font-bold mb-2">{mangaInfo.title}</h1>
       <h3 className="text-xl text-gray-600 mb-8">
-        {currentChapter ? `Chapter ${currentChapter.chapter}` : 'Loading...'}
+        {currentChapterInfo ? `Chapter ${currentChapterInfo.chapter}` : 'Loading...'}
       </h3>
 
       <div className="hidden lg:flex fixed right-5 bottom-12 flex-col z-50 p-2">
