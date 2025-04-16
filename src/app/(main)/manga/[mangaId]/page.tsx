@@ -62,6 +62,9 @@ const MangaDetailPage = () => {
   const mangaId = params.mangaId as string;
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingChapters, setIsLoadingChapters] = useState(false);
+  const chaptersPerPage = 10;
 
   const [manga, setManga] = useState<MangaData | null>(null);
   const [coverArt, setCoverArt] = useState<string | null>(null);
@@ -69,6 +72,29 @@ const MangaDetailPage = () => {
   const [userRating, setUserRating] = useState(0);
 
   const { chapterListData } = useChapterList(mangaId, selectedLanguage);
+
+  // Calculate pagination values
+  const totalChapters = chapterListData.length;
+  const totalPages = Math.ceil(totalChapters / chaptersPerPage);
+  const startIndex = (currentPage - 1) * chaptersPerPage;
+  const endIndex = startIndex + chaptersPerPage;
+  const currentChapters = chapterListData
+    .sort((a, b) => {
+      const numA = parseFloat(a.chapter);
+      const numB = parseFloat(b.chapter);
+      return sortOrder === 'asc' ? numA - numB : numB - numA;
+    })
+    .slice(startIndex, endIndex);
+
+  // Handle page change with loading animation
+  const handlePageChange = (newPage: number) => {
+    setIsLoadingChapters(true);
+    setCurrentPage(newPage);
+    // Simulate loading delay
+    setTimeout(() => {
+      setIsLoadingChapters(false);
+    }, 300);
+  };
 
   useEffect(() => {
     if (!mangaId) return;
@@ -186,6 +212,23 @@ const MangaDetailPage = () => {
       <button className="w-full py-2 bg-[#1a1a1a] hover:bg-[#333333] rounded text-sm">
         Rate this manga
       </button>
+    </div>
+  );
+
+  const ChapterSkeleton = () => (
+    <div className="animate-pulse">
+      {[...Array(5)].map((_, index) => (
+        <div key={index} className="p-4 border-b border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="w-4 h-4 bg-[#3f3f3f] rounded" />
+            <div className="h-4 bg-[#3f3f3f] rounded w-24" />
+          </div>
+          <div className="flex gap-2 mt-2">
+            <div className="h-3 bg-[#3f3f3f] rounded w-16" />
+            <div className="h-3 bg-[#3f3f3f] rounded w-20" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 
@@ -334,17 +377,13 @@ const MangaDetailPage = () => {
                 </div>
               </div>
               <div className="divide-y divide-gray-700">
-                {chapterListData
-                  .sort((a, b) => {
-                    // Convert chapter numbers to floats for proper decimal sorting
-                    const numA = parseFloat(a.chapter);
-                    const numB = parseFloat(b.chapter);
-                    return sortOrder === 'asc' ? numA - numB : numB - numA;
-                  })
-                  .map(chapter => (
+                {isLoadingChapters ? (
+                  <ChapterSkeleton />
+                ) : (
+                  currentChapters.map(chapter => (
                     <div
                       key={chapter.id}
-                      className="p-4 hover:bg-[#333333] cursor-pointer flex justify-between items-center"
+                      className="p-4 hover:bg-[#333333] cursor-pointer flex justify-between items-center transition-colors duration-200"
                       onClick={() => navigate(`/chapter/${chapter.id}?lang=${selectedLanguage}`)}
                     >
                       <div className="flex items-center gap-3 text-sm">
@@ -356,8 +395,51 @@ const MangaDetailPage = () => {
                         <span>2 days ago</span>
                       </div>
                     </div>
-                  ))}
+                  ))
+                )}
               </div>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="p-4 border-t border-gray-700 flex justify-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 rounded text-sm ${
+                      currentPage === 1
+                        ? 'bg-[#1a1a1a] text-gray-500 cursor-not-allowed'
+                        : 'bg-primary-500 hover:bg-primary-700 text-white'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-1 rounded text-sm ${
+                          currentPage === page
+                            ? 'bg-primary-500 text-white'
+                            : 'bg-[#1a1a1a] hover:bg-[#333333] text-gray-300'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 rounded text-sm ${
+                      currentPage === totalPages
+                        ? 'bg-[#1a1a1a] text-gray-500 cursor-not-allowed'
+                        : 'bg-primary-500 hover:bg-primary-700 text-white'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

@@ -8,7 +8,6 @@ import { Novel } from '@/types/novel';
 import { FaEnvelope, FaUser, FaLock } from 'react-icons/fa';
 import { updateUser } from '@/utils/userUtils';
 import { API_ENDPOINTS } from '@/config/api';
-import { ASSETS } from '@/config/constants';
 import Image from 'next/image';
 
 const ProfileHeader: React.FC = memo(() => {
@@ -51,7 +50,7 @@ const ProfileHeader: React.FC = memo(() => {
       <div
         className="absolute inset-0 w-full h-[200px] md:h-[350px] bg-cover bg-center"
         style={{
-          backgroundImage: `url(${ASSETS.PROFILE_BACKGROUND})`,
+          backgroundImage: `url("/images/background_image.jpg")`,
           backgroundPosition: 'center 25%',
         }}
       />
