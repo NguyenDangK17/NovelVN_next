@@ -42,7 +42,7 @@ const TrendingToday: React.FC = () => {
 
       if (coverArtRelationship) {
         const coverResponse = await axios.get(
-          `http://localhost:5000/api/mangadex/${coverArtRelationship.id}/cover`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/${coverArtRelationship.id}/cover`
         );
 
         if (coverResponse.data && coverResponse.data.data) {

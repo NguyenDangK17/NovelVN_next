@@ -58,7 +58,7 @@ const MangaChapterPage: React.FC = () => {
         setLoading(true);
         // First, get the chapter details to find the manga ID
         const chapterResponse = await axios.get(
-          `http://localhost:5000/api/mangadex/chapter/${chapterId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/chapter/${chapterId}`
         );
 
         const mangaId = chapterResponse.data.data.relationships.find(
@@ -73,7 +73,9 @@ const MangaChapterPage: React.FC = () => {
         setMangaId(mangaId);
 
         // Then get the manga details
-        const mangaResponse = await axios.get(`http://localhost:5000/api/mangadex/${mangaId}`);
+        const mangaResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/${mangaId}`
+        );
 
         // Find cover art relationship
         const coverArtRelationship = mangaResponse.data.data.relationships.find(
@@ -84,7 +86,7 @@ const MangaChapterPage: React.FC = () => {
         if (coverArtRelationship) {
           // Fetch cover art data
           const coverResponse = await axios.get(
-            `http://localhost:5000/api/mangadex/${coverArtRelationship.id}/cover`
+            `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/${coverArtRelationship.id}/cover`
           );
 
           // Construct cover URL
@@ -113,7 +115,7 @@ const MangaChapterPage: React.FC = () => {
     const fetchChapter = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/mangadex/at-home/server/${chapterId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/at-home/server/${chapterId}`
         );
         setChapterData(response.data);
       } catch (error) {

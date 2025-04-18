@@ -102,7 +102,9 @@ const MangaDetailPage = () => {
     const fetchMangaData = async () => {
       try {
         setLoading(true);
-        const mangaResponse = await axios.get(`http://localhost:5000/api/mangadex/${mangaId}`);
+        const mangaResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/${mangaId}`
+        );
         setManga(mangaResponse.data.data);
 
         const coverArtRelationship = mangaResponse.data.data.relationships.find(
@@ -111,7 +113,7 @@ const MangaDetailPage = () => {
 
         if (coverArtRelationship) {
           const coverResponse = await axios.get(
-            `http://localhost:5000/api/mangadex/${coverArtRelationship.id}/cover`
+            `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/${coverArtRelationship.id}/cover`
           );
 
           const coverUrl = `https://uploads.mangadex.org/covers/${mangaId}/${coverResponse.data.data.attributes.fileName}`;

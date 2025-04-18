@@ -83,7 +83,7 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState<'weekly' | 'monthly' | 'all time'>('weekly');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/mangas').then(res => setComics(res.data));
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/mangas`).then(res => setComics(res.data));
   }, []);
 
   const truncateTitle = useCallback((title: string, maxLength: number) => {
