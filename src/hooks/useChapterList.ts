@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Chapter } from '@/types/chapter';
-import { createHttpsRequestPromise } from '@/api/utils';
+// import { createHttpsRequestPromise } from '@/api/utils';
+import axios from 'axios';
 
 // Define the types for the chapter data structure
 export interface ChapterData {
@@ -25,6 +26,10 @@ export interface ChapterListResponse {
 export interface ProcessedChapterData extends ChapterData {
   chapterNumber: number;
 }
+
+// Cache for chapter lists
+const chapterListCache = new Map<string, { data: ChapterListResponse; timestamp: number }>();
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 // Function to process chapter data and create a list without duplicates
 export const processChapterList = (data: ChapterListResponse): ProcessedChapterData[] => {
@@ -60,44 +65,48 @@ export const useChapterList = (mangaId: string, language: string = 'vi') => {
   const [error, setError] = useState<Error | null>(null);
   const [rawData, setRawData] = useState<ChapterListResponse | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchChapterList = useCallback(async () => {
+    if (!mangaId) {
+      setLoading(false);
+      return;
+    }
 
-    const fetchChapterList = async () => {
-      if (!mangaId) {
-        setLoading(false);
-        return;
-      }
+    const cacheKey = `${mangaId}-${language}`;
+    const cachedData = chapterListCache.get(cacheKey);
+    const now = Date.now();
 
-      try {
-        setLoading(true);
-        const { data } = await createHttpsRequestPromise(
-          'GET',
-          `/manga/${mangaId}/aggregate?translatedLanguage[]=${language}`
-        );
+    if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
+      setChapter(cachedData.data as unknown as Chapter);
+      setRawData(cachedData.data);
+      setLoading(false);
+      return;
+    }
 
-        if (isMounted) {
-          setChapter(data as Chapter);
-          setRawData(data as unknown as ChapterListResponse);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err as Error);
-          console.error('Error fetching chapter list:', err);
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+    try {
+      setLoading(true);
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/${mangaId}/chapters?language=${language}`
+      );
 
-    fetchChapterList();
+      setChapter(data as Chapter);
+      setRawData(data as unknown as ChapterListResponse);
 
-    return () => {
-      isMounted = false;
-    };
+      // Cache the results
+      chapterListCache.set(cacheKey, {
+        data: data as unknown as ChapterListResponse,
+        timestamp: now,
+      });
+    } catch (err) {
+      setError(err as Error);
+      console.error('Error fetching chapter list:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [mangaId, language]);
+
+  useEffect(() => {
+    fetchChapterList();
+  }, [fetchChapterList]);
 
   // Memoize the processed chapter list to avoid unnecessary recalculations
   const chapterListData = useMemo(() => {
@@ -111,5 +120,6 @@ export const useChapterList = (mangaId: string, language: string = 'vi') => {
     error,
     chapterListData,
     rawData,
+    refetch: fetchChapterList,
   };
 };

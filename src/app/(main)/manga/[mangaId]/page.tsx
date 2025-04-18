@@ -102,7 +102,7 @@ const MangaDetailPage = () => {
     const fetchMangaData = async () => {
       try {
         setLoading(true);
-        const mangaResponse = await axios.get(`https://api.mangadex.org/manga/${mangaId}`);
+        const mangaResponse = await axios.get(`http://localhost:5000/api/mangadex/${mangaId}`);
         setManga(mangaResponse.data.data);
 
         const coverArtRelationship = mangaResponse.data.data.relationships.find(
@@ -111,7 +111,7 @@ const MangaDetailPage = () => {
 
         if (coverArtRelationship) {
           const coverResponse = await axios.get(
-            `https://api.mangadex.org/cover/${coverArtRelationship.id}?includes[]=manga`
+            `http://localhost:5000/api/mangadex/${coverArtRelationship.id}/cover`
           );
 
           const coverUrl = `https://uploads.mangadex.org/covers/${mangaId}/${coverResponse.data.data.attributes.fileName}`;
@@ -236,14 +236,19 @@ const MangaDetailPage = () => {
     <div className="min-h-screen bg-[#1a1a1a] text-white">
       {/* Hero Section */}
       <div className="relative w-full overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center blur-sm"
-          style={{
-            backgroundImage: `url(${coverArt})`,
-            backgroundPosition: 'center 30%',
-          }}
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-60" />
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={coverArt || ''}
+            alt="Background cover"
+            fill
+            priority
+            className="object-cover object-center blur-sm"
+            style={{ objectPosition: 'center 30%' }}
+          />
+          {/* Dark overlay on top of blurred image */}
+          <div className="absolute inset-0 bg-black bg-opacity-60" />
+        </div>
+
         <div className="relative z-10 px-4 py-12 sm:px-6 md:px-8 lg:px-12 flex items-center justify-start mt-12">
           <div className="flex flex-row items-stretch gap-4 w-full flex-wrap">
             <div className="relative w-[30%] max-w-[200px] min-w-[100px] aspect-[1443/2048] flex-shrink-0">

@@ -45,11 +45,8 @@ const MangaChapterPage: React.FC = () => {
   const [currentChapterIndex, setCurrentChapterIndex] = useState<number | null>(null);
   const [showNav, setShowNav] = useState(false);
   const [loadedImages, setLoadedImages] = useState(5);
-
-  // Get manga ID from chapter ID
   const [mangaId, setMangaId] = useState<string | null>(null);
 
-  // Use the chapter list hook with the language from URL
   const { chapterListData } = useChapterList(mangaId || '', language);
 
   // Fetch manga info from chapter ID
@@ -61,7 +58,7 @@ const MangaChapterPage: React.FC = () => {
         setLoading(true);
         // First, get the chapter details to find the manga ID
         const chapterResponse = await axios.get(
-          `https://api.mangadex.org/chapter/${chapterId}?includes[]=manga`
+          `http://localhost:5000/api/mangadex/chapter/${chapterId}`
         );
 
         const mangaId = chapterResponse.data.data.relationships.find(
@@ -76,7 +73,7 @@ const MangaChapterPage: React.FC = () => {
         setMangaId(mangaId);
 
         // Then get the manga details
-        const mangaResponse = await axios.get(`https://api.mangadex.org/manga/${mangaId}`);
+        const mangaResponse = await axios.get(`http://localhost:5000/api/mangadex/${mangaId}`);
 
         // Find cover art relationship
         const coverArtRelationship = mangaResponse.data.data.relationships.find(
@@ -87,7 +84,7 @@ const MangaChapterPage: React.FC = () => {
         if (coverArtRelationship) {
           // Fetch cover art data
           const coverResponse = await axios.get(
-            `https://api.mangadex.org/cover/${coverArtRelationship.id}?includes[]=manga`
+            `http://localhost:5000/api/mangadex/${coverArtRelationship.id}/cover`
           );
 
           // Construct cover URL
@@ -115,9 +112,10 @@ const MangaChapterPage: React.FC = () => {
 
     const fetchChapter = async () => {
       try {
-        const response = await fetch(`https://api.mangadex.org/at-home/server/${chapterId}`);
-        const data = await response.json();
-        setChapterData(data);
+        const response = await axios.get(
+          `http://localhost:5000/api/mangadex/at-home/server/${chapterId}`
+        );
+        setChapterData(response.data);
       } catch (error) {
         console.error('Error fetching chapter:', error);
       }

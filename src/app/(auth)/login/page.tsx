@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
-import { FormInput } from '@/components/FormInput';
+import FormInput from '@/components/FormInput';
 import { API_ENDPOINTS } from '@/config/api';
 import { ASSETS } from '@/config/constants';
 import Link from 'next/link';

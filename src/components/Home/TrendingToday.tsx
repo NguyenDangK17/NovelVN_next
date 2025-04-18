@@ -15,14 +15,10 @@ const TrendingToday: React.FC = () => {
   const [coverImages, setCoverImages] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const fetchMangas = async () => {
+    const fetchMangas = async (daysAgo = 3) => {
       try {
-        const threeDaysAgo = new Date();
-        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-        const formattedDate = threeDaysAgo.toISOString().split('T')[0] + 'T00:00:00';
-
         const response = await axios.get<MangaDexResponse>(
-          `https://api.mangadex.org/manga?limit=8&includedTagsMode=AND&excludedTagsMode=OR&availableTranslatedLanguage%5B%5D=en&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&createdAtSince=${formattedDate}&order%5BfollowedCount%5D=desc&hasAvailableChapters=true`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/mangadex/trending?daysAgo=${daysAgo}`
         );
         setMangas(response.data.data);
 
@@ -46,7 +42,7 @@ const TrendingToday: React.FC = () => {
 
       if (coverArtRelationship) {
         const coverResponse = await axios.get(
-          `https://api.mangadex.org/cover/${coverArtRelationship.id}?includes[]=manga`
+          `http://localhost:5000/api/mangadex/${coverArtRelationship.id}/cover`
         );
 
         if (coverResponse.data && coverResponse.data.data) {
