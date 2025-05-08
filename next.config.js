@@ -58,7 +58,9 @@ const nextConfig = {
     ];
   },
   experimental: {
-    optimizeCss: true,
+    optimizeCss: {
+      inlineThreshold: 0,
+    },
     optimizePackageImports: ['@heroicons/react', 'react-icons'],
   },
   compiler: {

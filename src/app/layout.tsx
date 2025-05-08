@@ -2,7 +2,7 @@ import './globals.css';
 import { ReactNode, Suspense } from 'react';
 import { Poppins } from 'next/font/google';
 import { NavigationProvider } from '@/context/NavigationContext';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -15,12 +15,16 @@ export const metadata: Metadata = {
   title: 'MangaVN - Đọc truyện tranh online',
   description:
     'MangaVN - Nền tảng đọc truyện tranh online lớn nhất Việt Nam với hàng ngàn bộ truyện được cập nhật liên tục.',
-  viewport: 'width=device-width, initial-scale=1',
-  themeColor: '#ffffff',
   robots: {
     index: true,
     follow: true,
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
