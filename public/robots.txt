@@ -1,0 +1,10 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow API and admin routes
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://mangavn.com/sitemap.xml 

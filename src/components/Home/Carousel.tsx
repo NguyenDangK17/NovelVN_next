@@ -10,7 +10,6 @@ import axios from 'axios';
 // Memoized Carousel Item component
 const CarouselItem = memo(
   ({ manga, coverImages }: { manga: MangaDexManga; coverImages: Record<string, string> }) => {
-    // Memoized helper functions
     const getCoverImage = useCallback(
       (manga: MangaDexManga) => {
         if (coverImages[manga.id]) {
@@ -59,6 +58,8 @@ const CarouselItem = memo(
               alt={`${title} background`}
               fill
               priority
+              sizes="100vw"
+              quality={75}
               className="object-cover object-center"
               style={{ objectPosition: 'center 25%' }}
             />
@@ -73,6 +74,8 @@ const CarouselItem = memo(
                   alt={title}
                   width={1443}
                   height={2048}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  quality={85}
                   className="w-full h-auto aspect-[1443/2048] object-cover rounded-md shadow-md"
                   priority
                 />
