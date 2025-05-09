@@ -3,6 +3,7 @@ import { ReactNode, Suspense } from 'react';
 import { Poppins } from 'next/font/google';
 import { NavigationProvider } from '@/context/NavigationContext';
 import { Metadata, Viewport } from 'next';
+import Loading from './loading';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -35,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="color-scheme" content="dark light" />
       </head>
       <body>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <NavigationProvider>{children}</NavigationProvider>
         </Suspense>
       </body>

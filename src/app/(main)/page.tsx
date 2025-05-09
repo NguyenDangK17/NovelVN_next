@@ -4,11 +4,11 @@ import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { Manga } from '@/types/manga';
 import CarouselComponent from '@/components/Home/Carousel';
-import { FaEye } from 'react-icons/fa';
 import Link from '@/components/ui/Link';
 import Image from 'next/image';
 import TrendingToday from '@/components/Home/TrendingToday';
 import ReadingHistory from '@/components/Home/ReadingHistory';
+import Ranking from '@/components/Home/Ranking';
 
 // Dummy Notice Board Data
 const notices = [
@@ -80,7 +80,6 @@ const forums = [
 
 const Home = () => {
   const [comics, setComics] = useState<Manga[]>([]);
-  const [activeTab, setActiveTab] = useState<'weekly' | 'monthly' | 'all time'>('weekly');
 
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/mangas`).then(res => setComics(res.data));
@@ -91,12 +90,6 @@ const Home = () => {
     const truncated = title.substring(0, maxLength);
     return truncated.substring(0, truncated.lastIndexOf(' ')) + '...';
   }, []);
-
-  const getFilteredComics = useCallback(() => {
-    if (activeTab === 'weekly') return comics.slice(0, 7);
-    if (activeTab === 'monthly') return comics.slice(4, 11);
-    return comics.slice(2, 9);
-  }, [activeTab, comics]);
 
   const MangaCard = ({ manga }: { manga: Manga }) => (
     <div className="flex flex-col">
@@ -135,7 +128,6 @@ const Home = () => {
       {/* Main Content Layout */}
       <div className="max-w-screen-2xl mx-auto px-4 lg:px-8 py-7 grid grid-cols-12 gap-6">
         {/* Popular Section - 9/12 width */}
-
         <div className="col-span-12 lg:col-span-9">
           <TrendingToday />
           <h1 className="text-3xl font-bold p-4 text-left">Notice Board</h1>
@@ -159,80 +151,8 @@ const Home = () => {
         </div>
 
         {/* Popular (Custom Tabs) Section - 3/12 width */}
-        <div className="col-span-12 lg:col-span-3 px-4">
-          <h1 className="text-3xl font-bold py-4 text-left">Ranking</h1>
-          {/* Custom Tab Navigation */}
-          <div className="flex mb-4">
-            {['weekly', 'monthly', 'all time'].map(tab => (
-              <button
-                key={tab}
-                className={`flex-1 py-2 text-md font-semibold transition-colors text-center ${
-                  activeTab === tab
-                    ? 'border-b-2 border-primary-500 text-primary-500'
-                    : 'text-gray-600'
-                }`}
-                onClick={() => setActiveTab(tab as 'weekly' | 'monthly' | 'all time')}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          {/* Tab Content */}
-          <ul className="space-y-4">
-            {getFilteredComics().map((comic, index) => (
-              <li
-                key={comic._id}
-                className="flex items-center hover:text-primary-500 rounded-lg cursor-pointer group"
-              >
-                <Link href={`/manga/${comic._id}`} className="flex items-center">
-                  <span
-                    className={`text-2xl font-bold mr-4 ${
-                      index === 0
-                        ? 'text-yellow-500'
-                        : index === 1
-                          ? 'text-[#b5b7bb]'
-                          : index === 2
-                            ? 'text-[#cd7f32]'
-                            : 'text-white'
-                    }`}
-                  >
-                    {index + 1}
-                  </span>
-                  <img
-                    src={comic.manga_cover}
-                    alt={comic.title}
-                    className="w-20 h-auto object-cover"
-                    style={{ aspectRatio: '283 / 403' }}
-                  />
-                  <div className="ml-4">
-                    <h2
-                      className={`text-md xl:text-xl font-bold group-hover:text-primary-500 ${
-                        index === 0
-                          ? 'text-yellow-500'
-                          : index === 1
-                            ? 'text-[#b5b7bb]'
-                            : index === 2
-                              ? 'text-[#cd7f32]'
-                              : 'text-white'
-                      }`}
-                    >
-                      {truncateTitle(comic.title, 30)}
-                    </h2>
-                    <div className="flex items-center">
-                      <span className="text-[#a1a1aa]">
-                        <FaEye />
-                      </span>
-                      <span className="ml-1 text-[#a1a1aa]">100,000</span>
-                    </div>
-                    <p className="text-sm text-gray-600 lg:hidden xl:block">
-                      {truncateTitle(comic.description, 50)}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div className="col-span-12 lg:col-span-3">
+          <Ranking />
         </div>
 
         {/* Novels & Manga Section - 9/12 width */}

@@ -264,7 +264,7 @@ const MangaDetailPage = () => {
             <div className="flex flex-col flex-1 min-h-[100%]">
               <div className="flex flex-col h-full justify-between">
                 {/* Title at top */}
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold break-words">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold break-words">
                   {manga.attributes.title.en || manga.attributes.altTitles[0].en || 'Manga title'}
                 </h1>
 
