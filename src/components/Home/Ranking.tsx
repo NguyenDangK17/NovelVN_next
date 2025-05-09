@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaEye } from 'react-icons/fa';
 import { MangaDexManga, MangaDexResponse } from '@/types/mangaDex';
 import axios from 'axios';
 
@@ -37,7 +36,7 @@ const Ranking: React.FC = () => {
   useEffect(() => {
     const fetchMangas = async () => {
       try {
-        let daysAgo = 7; // Default to weekly
+        let daysAgo = 7;
         if (activeTab === 'monthly') daysAgo = 60;
         if (activeTab === 'all time') daysAgo = 365;
 
@@ -137,11 +136,11 @@ const Ranking: React.FC = () => {
         {mangas.slice(0, 6).map((manga, index) => (
           <li
             key={manga.id}
-            className="flex items-center hover:text-primary-500 rounded-lg cursor-pointer group"
+            className="flex items-center hover:text-primary-500 rounded-lg cursor-pointer group h-[114px]"
           >
-            <Link href={`/manga/${manga.id}`} className="flex items-center">
+            <Link href={`/manga/${manga.id}`} className="flex items-center w-full">
               <span
-                className={`text-3xl font-bold mr-4 ${
+                className={`text-3xl text-center font-bold mr-2 min-w-[2rem] ${
                   index === 0
                     ? 'text-yellow-500'
                     : index === 1
@@ -153,17 +152,18 @@ const Ranking: React.FC = () => {
               >
                 {index + 1}
               </span>
-              <Image
-                src={getCoverImage(manga)}
-                alt={getTitle(manga)}
-                width={80}
-                height={114}
-                className="w-20 h-auto object-cover"
-                style={{ aspectRatio: '283 / 403' }}
-              />
-              <div className="ml-4">
+              <div className="relative w-20 h-[114px] flex-shrink-0">
+                <Image
+                  src={getCoverImage(manga)}
+                  alt={getTitle(manga)}
+                  fill
+                  className="object-cover rounded"
+                  sizes="80px"
+                />
+              </div>
+              <div className="ml-4 h-[114px] flex flex-col justify-start">
                 <h2
-                  className={`text-md xl:text-xl font-bold group-hover:text-primary-500 ${
+                  className={`text-md xl:text-lg font-bold group-hover:text-primary-500 ${
                     index === 0
                       ? 'text-yellow-500'
                       : index === 1
@@ -175,15 +175,11 @@ const Ranking: React.FC = () => {
                 >
                   {truncateTitle(getTitle(manga), 25)}
                 </h2>
-                <div className="flex items-center">
-                  <span className="text-[#a1a1aa]">
-                    <FaEye />
-                  </span>
-                  <span className="ml-1 text-[#a1a1aa]">100,000</span>
-                </div>
-                <p className="text-sm text-gray-600 lg:hidden xl:block">
-                  {truncateTitle(manga.attributes.description.en || '', 50)}
-                </p>
+                {manga.attributes.description.en && (
+                  <p className="text-sm text-gray-600 lg:hidden xl:block">
+                    {truncateTitle(manga.attributes.description.en, 45)}
+                  </p>
+                )}
               </div>
             </Link>
           </li>
