@@ -51,7 +51,7 @@ const CarouselItem = memo(
 
     return (
       <Link href={`/manga/${manga.id}`} className="block">
-        <div className="relative w-full h-auto min-h-[70vh] flex items-center justify-center px-4 sm:px-8 lg:px-12 py-12 overflow-hidden">
+        <div className="relative w-full h-[70vh] flex items-center justify-center px-4 sm:px-8 lg:px-12 py-12 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <Image
               src={coverImage}
@@ -68,7 +68,7 @@ const CarouselItem = memo(
 
           <div className="relative flex flex-col md:flex-row w-full h-full gap-4 mt-10 z-10">
             <div className="w-full md:w-[25%] flex justify-center items-start">
-              <div className="w-full max-w-[250px] sm:max-w-[300px]">
+              <div className="w-full max-w-[250px] sm:max-w-[300px] aspect-[1443/2048]">
                 <Image
                   src={coverImage}
                   alt={title}
@@ -76,7 +76,7 @@ const CarouselItem = memo(
                   height={2048}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   quality={85}
-                  className="w-full h-auto aspect-[1443/2048] object-cover rounded-md shadow-md"
+                  className="w-full h-full object-cover rounded-md shadow-md"
                   priority
                 />
               </div>
@@ -105,12 +105,12 @@ CarouselItem.displayName = 'CarouselItem';
 const CarouselSkeleton = memo(() => {
   return (
     <div className="max-w-screen-2xl mx-auto">
-      <div className="relative w-full h-auto min-h-[70vh] flex items-center justify-center px-4 sm:px-8 lg:px-12 py-12">
+      <div className="relative w-full h-[70vh] flex items-center justify-center px-4 sm:px-8 lg:px-12 py-12">
         <div className="absolute inset-0 bg-[#191a1c] z-0" />
         <div className="relative flex flex-col md:flex-row w-full h-full gap-4 mt-10 z-10">
           <div className="w-full md:w-[25%] flex justify-center items-start">
-            <div className="w-full max-w-[250px] sm:max-w-[300px]">
-              <div className="w-full h-auto aspect-[1443/2048] bg-[#3f3f3f] rounded-md animate-pulse" />
+            <div className="w-full max-w-[250px] sm:max-w-[300px] aspect-[1443/2048]">
+              <div className="w-full h-full bg-[#3f3f3f] rounded-md animate-pulse" />
             </div>
           </div>
           <div className="w-full md:w-[65%] flex flex-col justify-start">
@@ -203,4 +203,4 @@ const CarouselComponent: React.FC = () => {
   );
 };
 
-export default CarouselComponent;
+export default memo(CarouselComponent);

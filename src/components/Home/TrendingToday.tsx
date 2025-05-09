@@ -91,8 +91,8 @@ const TrendingToday: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="flex flex-col items-center justify-center p-4">
-              <div className="relative w-full">
-                <div className="w-full h-auto aspect-[1443/2048] bg-[#2c2c2c] rounded animate-pulse" />
+              <div className="relative w-full aspect-[1443/2048]">
+                <div className="w-full h-full bg-[#2c2c2c] rounded animate-pulse" />
               </div>
             </div>
           ))}
@@ -136,7 +136,7 @@ const TrendingToday: React.FC = () => {
           <SwiperSlide key={manga.id}>
             <div className="flex flex-col items-center justify-center hover:cursor-pointer group p-4">
               <Link href={`/manga/${manga.id}`} className="relative w-full">
-                <div className="relative w-full">
+                <div className="relative w-full aspect-[1443/2048]">
                   <Image
                     src={getCoverImage(manga)}
                     alt={getTitle(manga)}
@@ -144,7 +144,7 @@ const TrendingToday: React.FC = () => {
                     height={2048}
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                     quality={85}
-                    className="w-full h-auto aspect-[1443/2048] object-cover hover:cursor-pointer"
+                    className="w-full h-full object-cover hover:cursor-pointer"
                     loading="lazy"
                   />
                   <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
