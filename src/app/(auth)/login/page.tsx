@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import axios from 'axios';
 import Image from 'next/image';
 import FormInput from '@/components/FormInput';
-import { API_ENDPOINTS } from '@/config/api';
 import { ASSETS } from '@/config/constants';
 import Link from 'next/link';
+import { login } from '@/utils/auth';
 
 interface LoginFormData {
   email: string;
@@ -17,6 +16,14 @@ interface LoginErrors {
   email?: string;
   password?: string;
   general?: string;
+}
+
+// Define a type for the error with a response property
+interface ErrorWithResponse {
+  response: {
+    status: number;
+    data: { message: string };
+  };
 }
 
 const LoginPage: React.FC = () => {
@@ -40,33 +47,32 @@ const LoginPage: React.FC = () => {
       setErrors({});
 
       try {
-        const response = await axios.post(API_ENDPOINTS.LOGIN, formData);
-
-        if (response.status === 200) {
-          localStorage.setItem('user', JSON.stringify(response.data));
-          window.location.replace('/');
-        }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 401) {
+        await login(formData.email, formData.password);
+        window.location.replace('/');
+      } catch (error: unknown) {
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'response' in error &&
+          typeof (error as ErrorWithResponse).response === 'object' &&
+          (error as ErrorWithResponse).response !== null
+        ) {
+          const response = (error as ErrorWithResponse).response;
+          if (response.status === 401) {
             setErrors({
               general: 'Invalid email or password',
             });
-          } else if (error.response?.status === 400) {
-            const errorMessage = error.response.data.message;
-            if (errorMessage.includes('Email')) {
+          } else if (response.status === 400) {
+            const errorMessage = response.data.message;
+            if (typeof errorMessage === 'string' && errorMessage.includes('Email')) {
               setErrors(prev => ({ ...prev, email: errorMessage }));
-            } else if (errorMessage.includes('Password')) {
+            } else if (typeof errorMessage === 'string' && errorMessage.includes('Password')) {
               setErrors(prev => ({ ...prev, password: errorMessage }));
             }
-          } else {
-            setErrors({
-              general: 'An error occurred. Please try again later.',
-            });
           }
         } else {
           setErrors({
-            general: 'An unexpected error occurred. Please try again.',
+            general: 'An error occurred. Please try again later.',
           });
         }
       } finally {
@@ -90,6 +96,7 @@ const LoginPage: React.FC = () => {
           MangaVN
         </span>
       </div>
+
       <div className="w-full bg-[#212328] max-w-lg shadow border-t-4 border-primary-500">
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
           <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl text-center">
@@ -147,7 +154,7 @@ const LoginPage: React.FC = () => {
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 text-center">
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="text-primary-500 hover:underline">
                 Sign up

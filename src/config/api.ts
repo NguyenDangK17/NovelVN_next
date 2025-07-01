@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
   NOVEL_CHAPTERS: (id: string) => `${API_BASE_URL}/novels/${id}/chapters`,
 
   // User endpoints
-  USER_PROFILE: (id: string) => `${API_BASE_URL}/users/${id}`,
+  USER_DETAIL: (id: string) => `${API_BASE_URL}/users/${id}`,
   USER_GROUPS: (id: string) => `${API_BASE_URL}/users/${id}/groups`,
 
   // Group endpoints

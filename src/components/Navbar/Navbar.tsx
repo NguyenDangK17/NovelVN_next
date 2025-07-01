@@ -67,7 +67,7 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
-  const isProfilePage = pathname === '/profile';
+  const isProfilePage = pathname?.startsWith('/profile');
 
   const navLink = (href: string, label: string) => (
     <li>
@@ -215,7 +215,7 @@ const Navbar: React.FC = () => {
                         >
                           <div className="flex items-center space-x-3">
                             {manga.coverUrl && (
-                              <img
+                              <Image
                                 src={manga.coverUrl}
                                 alt="Manga Cover"
                                 width={40}
@@ -386,10 +386,11 @@ const Navbar: React.FC = () => {
                         {manga.coverUrl && (
                           <Image
                             src={manga.coverUrl}
-                            alt={manga.title}
+                            alt="Manga Cover"
                             width={40}
                             height={60}
                             className="rounded object-cover"
+                            loading="lazy"
                           />
                         )}
                         <div>
