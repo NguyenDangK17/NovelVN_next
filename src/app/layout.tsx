@@ -1,9 +1,9 @@
 import './globals.css';
-import { ReactNode, Suspense } from 'react';
+import { ReactNode } from 'react';
 import { Poppins } from 'next/font/google';
 import { NavigationProvider } from '@/context/NavigationContext';
 import { Metadata, Viewport } from 'next';
-import Loading from './loading';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -36,9 +36,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="color-scheme" content="dark light" />
       </head>
       <body>
-        <Suspense fallback={<Loading />}>
+        <ErrorBoundary>
           <NavigationProvider>{children}</NavigationProvider>
-        </Suspense>
+        </ErrorBoundary>
       </body>
     </html>
   );

@@ -8,6 +8,7 @@ import { validateSignupForm } from '@/utils/validation';
 import { API_ENDPOINTS } from '@/config/api';
 import { ASSETS } from '@/config/constants';
 import Link from 'next/link';
+import { getApiErrorMessage } from '@/utils/api';
 
 interface SignupFormData {
   username: string;
@@ -73,7 +74,7 @@ const SignupPage: React.FC = () => {
         } else {
           setErrors(prev => ({
             ...prev,
-            general: 'Signup failed. Please try again.',
+            general: getApiErrorMessage(error),
           }));
         }
       } finally {

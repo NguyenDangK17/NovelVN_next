@@ -47,7 +47,8 @@ const ReadingHistory = () => {
               <Link href={`/manga/${item.mangaId}`}>
                 <Image
                   src={item.manga_cover}
-                  alt={item.title}
+                  // alt={item.title}
+                  alt="Manga Cover"
                   width={1443}
                   height={2048}
                   className="w-full h-auto aspect-[1443/2048] object-cover hover:cursor-pointer rounded-lg"

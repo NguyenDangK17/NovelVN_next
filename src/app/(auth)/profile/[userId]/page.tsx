@@ -130,6 +130,17 @@ const Groups: React.FC = memo(() => (
   <div className="h-full">
     <h2 className="text-xl font-bold text-white mb-3">Groups</h2>
     <p className="text-white">Here you can find all the groups you are part of.</p>
+    {/* <video
+      src={
+        'https://cdn.donmai.us/original/96/11/__saigyouji_yuyuko_touhou_drawn_by_umezawa_itte__9611e82c1a72005c353e6051d7ca991b.mp4'
+      }
+      controls
+      autoPlay={false}
+      width="100%"
+      style={{ borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
+    >
+      Your browser does not support the video tag.
+    </video> */}
   </div>
 ));
 Groups.displayName = 'Groups';

@@ -8,7 +8,8 @@ import Link from '@/components/ui/Link';
 import Image from 'next/image';
 import TrendingToday from '@/components/Home/TrendingToday';
 import ReadingHistory from '@/components/Home/ReadingHistory';
-import Ranking from '@/components/Home/Ranking';
+import dynamic from 'next/dynamic';
+import React from 'react';
 
 // Dummy Notice Board Data
 const notices = [
@@ -78,20 +79,18 @@ const forums = [
   },
 ];
 
-const Home = () => {
-  const [comics, setComics] = useState<Manga[]>([]);
+const DynamicRanking = dynamic(() => import('@/components/Home/Ranking'), {
+  loading: () => <div>Loading ranking...</div>,
+});
 
-  useEffect(() => {
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/mangas`).then(res => setComics(res.data));
-  }, []);
-
-  const truncateTitle = useCallback((title: string, maxLength: number) => {
-    if (title.length <= maxLength) return title;
-    const truncated = title.substring(0, maxLength);
-    return truncated.substring(0, truncated.lastIndexOf(' ')) + '...';
-  }, []);
-
-  const MangaCard = ({ manga }: { manga: Manga }) => (
+const MangaCard = React.memo(
+  ({
+    manga,
+    truncateTitle,
+  }: {
+    manga: Manga;
+    truncateTitle: (title: string, maxLength: number) => string;
+  }) => (
     <div className="flex flex-col">
       <div className="group">
         <Link href={`/manga/${manga._id}`}>
@@ -104,7 +103,7 @@ const Home = () => {
           />
           <h2
             className="text-lg font-bold my-2 min-h-[3rem] line-clamp-2 overflow-hidden
-            hover:cursor-pointer group-hover:text-primary-500"
+          hover:cursor-pointer group-hover:text-primary-500"
           >
             {truncateTitle(manga.title, 40)}
           </h2>
@@ -119,7 +118,22 @@ const Home = () => {
         </div>
       ))}
     </div>
-  );
+  )
+);
+MangaCard.displayName = 'MangaCard';
+
+const Home = () => {
+  const [comics, setComics] = useState<Manga[]>([]);
+
+  useEffect(() => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/mangas`).then(res => setComics(res.data));
+  }, []);
+
+  const truncateTitle = useCallback((title: string, maxLength: number) => {
+    if (title.length <= maxLength) return title;
+    const truncated = title.substring(0, maxLength);
+    return truncated.substring(0, truncated.lastIndexOf(' ')) + '...';
+  }, []);
 
   return (
     <div className="w-full pb-16 overflow-x-hidden">
@@ -152,7 +166,7 @@ const Home = () => {
 
         {/* Popular (Custom Tabs) Section - 3/12 width */}
         <div className="col-span-12 lg:col-span-3">
-          <Ranking />
+          <DynamicRanking />
         </div>
 
         {/* Novels & Manga Section - 9/12 width */}
@@ -168,7 +182,7 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
             {comics.slice(0, 5).map(comic => (
-              <MangaCard key={comic._id} manga={comic} />
+              <MangaCard key={comic._id} manga={comic} truncateTitle={truncateTitle} />
             ))}
           </div>
 
@@ -183,7 +197,7 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
             {comics.slice(0, 10).map(comic => (
-              <MangaCard key={comic._id} manga={comic} />
+              <MangaCard key={comic._id} manga={comic} truncateTitle={truncateTitle} />
             ))}
           </div>
 
@@ -309,5 +323,4 @@ const Home = () => {
     </div>
   );
 };
-
 export default Home;

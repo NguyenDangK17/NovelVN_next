@@ -18,7 +18,6 @@ import Loading from '@/app/loading';
 import { useChapterList } from '@/hooks/useChapterList';
 import { useNavigation } from '@/context/NavigationContext';
 
-// Define the manga data type based on the new API structure
 interface MangaData {
   id: string;
   type: string;
@@ -59,7 +58,7 @@ interface MangaData {
 const MangaDetailPage = () => {
   const { navigate } = useNavigation();
   const params = useParams();
-  const mangaId = params.mangaId as string;
+  const mangaId = params?.mangaId as string;
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,7 +72,6 @@ const MangaDetailPage = () => {
 
   const { chapterListData } = useChapterList(mangaId, selectedLanguage);
 
-  // Calculate pagination values
   const totalChapters = chapterListData.length;
   const totalPages = Math.ceil(totalChapters / chaptersPerPage);
   const startIndex = (currentPage - 1) * chaptersPerPage;
@@ -86,11 +84,9 @@ const MangaDetailPage = () => {
     })
     .slice(startIndex, endIndex);
 
-  // Handle page change with loading animation
   const handlePageChange = (newPage: number) => {
     setIsLoadingChapters(true);
     setCurrentPage(newPage);
-    // Simulate loading delay
     setTimeout(() => {
       setIsLoadingChapters(false);
     }, 300);
@@ -135,17 +131,14 @@ const MangaDetailPage = () => {
     setUserRating(rating);
   };
 
-  // Get genres from tags
   const genres = manga.attributes.tags
     .filter(tag => tag.attributes.group === 'genre')
     .map(tag => tag.attributes.name.en);
 
-  // Get themes from tags
   const themes = manga.attributes.tags
     .filter(tag => tag.attributes.group === 'theme')
     .map(tag => tag.attributes.name.en);
 
-  // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -155,7 +148,6 @@ const MangaDetailPage = () => {
     });
   };
 
-  // Find author and artist from relationships
   const findRelationship = (type: string) => {
     const relationship = manga.relationships.find(rel => rel.type === type);
     return relationship ? relationship.id : 'Unknown';
@@ -265,7 +257,10 @@ const MangaDetailPage = () => {
               <div className="flex flex-col h-full justify-between">
                 {/* Title at top */}
                 <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold break-words">
-                  {manga.attributes.title.en || manga.attributes.altTitles[0].en || 'Manga title'}
+                  {manga.attributes.title.en ||
+                    manga.attributes.title['ja-ro'] ||
+                    manga.attributes.altTitles[0].en ||
+                    'Manga title'}
                 </h1>
 
                 {/* Action buttons pinned to bottom */}

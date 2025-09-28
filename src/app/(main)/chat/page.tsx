@@ -14,6 +14,93 @@ interface ChatMessage {
   timestamp: number;
 }
 
+interface UserListProps {
+  loadingUsers: boolean;
+  error: string;
+  filteredUsers: User[];
+  selectedUser: User | null;
+  setSelectedUser: (user: User | null) => void;
+}
+
+const UserList = React.memo(
+  ({ loadingUsers, error, filteredUsers, selectedUser, setSelectedUser }: UserListProps) => (
+    <div className="flex-1 overflow-y-auto">
+      {loadingUsers ? (
+        <div className="text-gray-400 text-center mt-8">Loading users...</div>
+      ) : error ? (
+        <div className="text-red-400 text-center mt-8">{error}</div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="text-gray-400 text-center mt-8">No users found.</div>
+      ) : (
+        <ul>
+          {filteredUsers.map((u: User) => (
+            <li key={u._id}>
+              <button
+                onClick={() => setSelectedUser(u)}
+                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-[#18181b] transition cursor-pointer ${selectedUser?._id === u._id ? 'bg-[#18181b]' : ''}`}
+              >
+                <Image
+                  src={u.avatar || '/default-avatar.png'}
+                  alt={u.username}
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover border border-gray-500"
+                />
+                <span className="text-white font-medium">{u.username}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+);
+UserList.displayName = 'UserList';
+
+interface ChatMessagesProps {
+  messages: ChatMessage[];
+  user: User;
+  loadingChat: boolean;
+  messagesEndRef: React.RefObject<HTMLDivElement>;
+}
+
+const ChatMessages = React.memo(
+  ({ messages, user, loadingChat, messagesEndRef }: ChatMessagesProps) => (
+    <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-[#18181b]">
+      {loadingChat ? (
+        <div className="text-gray-400 text-center mt-8">Connecting...</div>
+      ) : messages.length === 0 ? (
+        <div className="text-gray-400 text-center mt-8">No messages yet. Say hi!</div>
+      ) : (
+        messages.map((msg: ChatMessage, idx: number) => (
+          <div
+            key={idx}
+            className={`flex ${msg.from === user._id ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-xs md:max-w-md px-4 py-2 rounded-lg shadow text-sm break-words ${
+                msg.from === user._id
+                  ? 'bg-primary-500 text-white rounded-br-none'
+                  : 'bg-[#23232a] text-white rounded-bl-none'
+              }`}
+            >
+              <div>{msg.message}</div>
+              <div className="text-xs text-gray-400 mt-1 text-right">
+                {new Date(msg.timestamp).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </div>
+            </div>
+          </div>
+        ))
+      )}
+      <div ref={messagesEndRef} />
+    </div>
+  )
+);
+ChatMessages.displayName = 'ChatMessages';
+
 const ChatPage: React.FC = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -132,33 +219,14 @@ const ChatPage: React.FC = () => {
           />
         </div>
         <div className="flex-1 overflow-y-auto">
-          {loadingUsers ? (
-            <div className="text-gray-400 text-center mt-8">Loading users...</div>
-          ) : error ? (
-            <div className="text-red-400 text-center mt-8">{error}</div>
-          ) : filteredUsers.length === 0 ? (
-            <div className="text-gray-400 text-center mt-8">No users found.</div>
-          ) : (
-            <ul>
-              {filteredUsers.map(u => (
-                <li key={u._id}>
-                  <button
-                    onClick={() => setSelectedUser(u)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-[#18181b] transition cursor-pointer ${selectedUser?._id === u._id ? 'bg-[#18181b]' : ''}`}
-                  >
-                    <Image
-                      src={u.avatar || '/default-avatar.png'}
-                      alt={u.username}
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover border border-gray-500"
-                    />
-                    <span className="text-white font-medium">{u.username}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <UserList
+            users={users}
+            loadingUsers={loadingUsers}
+            error={error}
+            filteredUsers={filteredUsers}
+            selectedUser={selectedUser}
+            setSelectedUser={setSelectedUser}
+          />
         </div>
       </div>
       {/* Right: Chat Content or Placeholder */}
@@ -188,35 +256,12 @@ const ChatPage: React.FC = () => {
             </div>
             {/* Chat messages */}
             <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-[#18181b]">
-              {loadingChat ? (
-                <div className="text-gray-400 text-center mt-8">Connecting...</div>
-              ) : messages.length === 0 ? (
-                <div className="text-gray-400 text-center mt-8">No messages yet. Say hi!</div>
-              ) : (
-                messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${msg.from === user._id ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-xs md:max-w-md px-4 py-2 rounded-lg shadow text-sm break-words ${
-                        msg.from === user._id
-                          ? 'bg-primary-500 text-white rounded-br-none'
-                          : 'bg-[#23232a] text-white rounded-bl-none'
-                      }`}
-                    >
-                      <div>{msg.message}</div>
-                      <div className="text-xs text-gray-400 mt-1 text-right">
-                        {new Date(msg.timestamp).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-              <div ref={messagesEndRef} />
+              <ChatMessages
+                messages={messages}
+                user={user}
+                loadingChat={loadingChat}
+                messagesEndRef={messagesEndRef}
+              />
             </div>
             {/* Input bar */}
             <div className="p-4 border-t border-[#23232a] bg-[#23232a] flex items-center gap-2">

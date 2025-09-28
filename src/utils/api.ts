@@ -48,6 +48,19 @@ export function useApi<T>(path: string, options = {}) {
   });
 }
 
+// Central error utility
+export function getApiErrorMessage(error: unknown): string {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const axiosError = error as { response?: { data?: { message?: string } } };
+    if (axiosError.response?.data?.message) return axiosError.response.data.message;
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    const errorWithMessage = error as { message: string };
+    return errorWithMessage.message;
+  }
+  return 'An unexpected error occurred. Please try again later.';
+}
+
 // API methods
 export const apiClient = {
   get: <T>(url: string) => api.get<T>(url).then(res => res.data),

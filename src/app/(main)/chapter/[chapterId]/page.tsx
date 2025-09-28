@@ -8,6 +8,7 @@ import { FaBackward, FaExclamationCircle, FaForward, FaHome, FaInfo } from 'reac
 import { useChapterList } from '@/hooks/useChapterList';
 import { useNavigation } from '@/context/NavigationContext';
 import { addToReadingHistory } from '@/utils/history';
+import Image from 'next/image';
 // import CommentSection from "../../components/Comment/CommentSection";
 
 interface ChapterData {
@@ -36,8 +37,8 @@ const MangaChapterPage: React.FC = () => {
   const params = useParams();
   const searchParams = useSearchParams();
   const { navigate } = useNavigation();
-  const chapterId = params.chapterId as string;
-  const language = searchParams.get('lang') || 'en';
+  const chapterId = params?.chapterId as string;
+  const language = searchParams?.get('lang') || 'en';
   const [chapterData, setChapterData] = useState<ChapterData | null>(null);
   const [loading, setLoading] = useState(true);
   const [mangaInfo, setMangaInfo] = useState<MangaInfo | null>(null);
@@ -304,12 +305,15 @@ const MangaChapterPage: React.FC = () => {
 
       {/* Manga Pages */}
       {imageFiles.slice(0, loadedImages).map((filename, index) => (
-        <img
+        <Image
           key={index}
           src={`${baseUrl}/data/${chapter.hash}/${filename}`}
           alt={`Page ${index + 1}`}
+          width={800}
+          height={1200}
           className="w-full my-2"
           loading="lazy"
+          unoptimized
         />
       ))}
 
